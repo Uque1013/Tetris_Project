@@ -192,11 +192,11 @@ public:
 // 게임 타이틀
 void GameTitle() {
 	const char* tetris[] = {
-		"■■■■■  ■■■■  ■■■■■  ■■■   ■■■■■  ■■■■■",
-		"    ■      ■            ■	   ■    ■     ■      ■",
-		"    ■      ■■■■      ■      ■■■       ■      ■■■■■",
-		"    ■      ■            ■      ■   ■      ■              ■",
-		"    ■      ■■■■      ■      ■    ■     ■      ■■■■■"
+		"■■■  ■■■  ■■■  ■■■    ■■■   ■■■",
+		"  ■    ■        ■	 ■    ■    ■    ■",
+		"  ■    ■■■    ■    ■■■      ■     ■■■",
+		"  ■    ■        ■    ■   ■     ■          ■",
+		"  ■    ■■■    ■    ■    ■  ■■■   ■■■"
 	};
 
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0003);
@@ -215,4 +215,5 @@ void GameTitle() {
 int main() {
 	srand((unsigned)time(NULL));
 	GameTitle();
+
 }

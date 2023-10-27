@@ -36,17 +36,17 @@ public:
 	int getColor(int num); // 블록 색깔 함수
 };
 
-// 테트로미노 배열
+// 테트로미노 배열 (배열 차원 한 단계씩 줄여갈 예정)
 const int Blocks::shape[7][4][4][4] = {
 	{ // I-Piece
-		{0,0,0,0,
+		{1,1,1,1,
 		0,0,0,0,
-		1,1,1,1,
+		0,0,0,0,
 		0,0,0,0},
-		{0,1,0,0,
-		0,1,0,0,
-		0,1,0,0,
-		0,1,0,0},
+		{1,0,0,0,
+		1,0,0,0,
+		1,0,0,0,
+		1,0,0,0},
 		{0,0,0,0,
 		0,0,0,0,
 		1,1,1,1,
@@ -210,10 +210,90 @@ void GameTitle() {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 }
 
+void show_graphic(std::string*** p) {
+	int i, j;
+	for (i = 0; i < 30; i++) {
+		for (j = 0; j < 30; j++) { std::cout << p[i][j]->c_str(); }
+		std::cout << std::endl;
+	}
+
+	return;
+}
+int array(char key) {
+	switch (key) {
+	case 72: return 0;
+	case 75: return 1;
+	case 77: return 3;
+	case 80: return 2;
+	default: return -1;
+	}
+}
+void move_block(char*** p, int blocktype, int key, int x, int y) {
+
+}
+void show_blockpoints(char** p) {
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 2; j++) {
+			printf(" %d", p[i][j]);
+		}
+		printf("\n");
+	}
+	return;
+}
 
 
+// 테트리스 화면 크기 구상 : 대부분 10*20 사용
 int main() {
 	srand((unsigned)time(NULL));
-	GameTitle();
+	// GameTitle();
 
+	// ▩□■
+	int i = 0, j = 0;
+	std::string*** graphic; // 문자열을 원소로 갖는 2차원 배열
+	int** block_points;
+
+	// graphic 동적할당
+	graphic = new std::string **[30]; // 30개의 행
+	for (i = 0; i < 30; i++) {
+		graphic[i] = new std::string * [30]; // 30개의 열
+	}
+
+	block_points = (int**)malloc(sizeof(int*) * 4);
+	for (i = 0; i < 4; i++) block_points[i] = (int*)malloc(sizeof(int) * 2);
+
+	//show_blockpoints(block_points);
+
+	// 기본세팅
+	for (i = 0; i < 30; i++) {
+		for (j = 0; j < 30; j++) {
+			if (i == 4 && j > 8 && j < 21) {
+				graphic[i][j] = new std::string("▩");
+			}
+			else if (i == 25 && j > 8 && j < 21) {
+				graphic[i][j] = new std::string("▩");
+			}
+			else if (j == 9 && i > 3 && i < 26) {
+				graphic[i][j] = new std::string("▩");
+			}
+			else if (j == 20 && i > 3 && i < 26) {
+				graphic[i][j] = new std::string("▩");
+			}
+			else graphic[i][j] = new std::string("  ");
+
+		}
+	}
+
+	show_graphic(graphic);
+
+	// 할당된 메모리 해제
+	for (i = 0; i < 30; i++) {
+		for (j = 0; j < 30; j++) {
+			delete graphic[i][j];
+		}
+		delete[] graphic[i];
+	}
+	delete[] graphic;
+
+	return 0;
 }

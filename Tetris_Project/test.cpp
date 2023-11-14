@@ -1,5 +1,5 @@
-﻿#include <iostream>
-//#include <Windows.h>
+﻿//#include <iostream>
+//#include <windows.h>
 //#include <vector>
 //#include <string>
 //#include <cstdlib> // rand
@@ -18,8 +18,8 @@
 //# define ESC 27 // 게임 종료 
 //
 //// 좌표 이동 
-//void gotoxy(int x, int y) { //gotoxy함수 
-//	COORD pos = { 2 * x,y };
+//void gotoxy(int x, int y) {
+//	COORD pos = { 2 * x, y };
 //	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 //}
 //
@@ -30,7 +30,6 @@
 //		next_type = rand() % 7;
 //	}
 //
-//	static const int shape[7][4][4][4]; // 블록 모양 
 //	int x, y; // 좌표
 //	int type; // 블록 종류
 //	int rotation; // 블록 회전값
@@ -96,7 +95,7 @@
 //		std::cout << std::endl;
 //	}
 //}
-//int array(char key) {
+//int arrow(char key) {
 //	switch (key) {
 //	case 72: return 0;
 //	case 75: return 1;
@@ -130,10 +129,10 @@
 //			nums_to_arr(p, -1, -1, 0, -1, 0, 0, 0, 1);
 //			return;
 //		case 1:
-//			nums_to_arr(p, 0, -1, 0, 0, 0, 1, -1, 1);
+//			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, -1);
 //			return;
 //		case 2:
-//			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
+//			nums_to_arr(p, 0, -1, 0, 0, 0, 1, 1, 1);
 //			return;
 //		case 3:
 //			nums_to_arr(p, -1, 0, -1, 1, 0, 0, 1, 0);
@@ -151,7 +150,7 @@
 //			nums_to_arr(p, 1, -1, 0, -1, 0, 0, 0, 1);
 //			return;
 //		case 3:
-//			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
+//			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, 1);
 //			return;
 //		}
 //	case 3:
@@ -208,19 +207,33 @@
 //		p[tenpi][tenpj] = "■";
 //	}
 //}
-//
+//void del_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector<int>>& q, int a, int b) {
+//	for (int i = 0; i < 4; i++) {
+//		int tenpi = a + q[i][0];
+//		int tenpj = b + q[i][1];
+//		p[tenpi][tenpj] = "  ";
+//	}
+//}
+//void move_coors(std::vector<int> location, int key) {
+//	int i;
+//	switch (key) {
+//	case 0:
+//		location[1] -= 1;
+//		return;
+//	case 1:
+//		location[0] -= 1;
+//		return;
+//	case 2:
+//		location[1] += 1;
+//		return;
+//	case 3:
+//		location[0] += 1;
+//		return;
+//	}
+//}
 //void move_block(std::vector<std::vector<std::string>>& p, int blocktype, int key, int x, int y) {
 //
 //}
-//void show_blockpoints(std::vector<std::vector<int>>& p) {
-//	for (int i = 0; i < 4; i++) {
-//		for (int j = 0; j < 2; j++) {
-//			std::cout << " " << p[i][j];
-//		}
-//		std::cout << std::endl;
-//	}
-//}
-//
 //
 //
 //// 테트리스 화면 크기 구상 : 대부분 10*20 사용
@@ -229,9 +242,11 @@
 //	// GameTitle();
 //
 //	// ▩□■
+//	int i = 0, j = 0, key, a, b;
 //	int testi, testj;
 //	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
 //	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2));
+//	std::vector<int> location(2); // 블럭 중심의 위치
 //
 //	// 기본 설정
 //	for (int i = 0; i < 30; i++) {
@@ -244,27 +259,21 @@
 //		}
 //	}
 //
-//	while (1) {
-//		// 게임 루프
-//		// 블록 이동 및 게임 로직 구현 필요
-//		std::cin >> testi >> testj;
-//		if (testi == -1) return 0;
-//		block_type_to_coors(block_coors, testi, testj);
-//		put_block(graphic, block_coors, 15, 15);
-//		show_graphic(graphic);
-//		// 블록 이동 로직 호출
-//		// ...
+//	location[0] = 15;
+//	location[1] = 15; // test 좌표
+//	block_type_to_coors(block_coors, 2, 0);
+//	put_block(graphic, block_coors, location[0], location[1]);
+//	show_graphic(graphic);
 //
-//		// 그래픽 초기화
-//		for (int i = 0; i < 30; i++) {
-//			for (int j = 0; j < 30; j++) {
-//				if (i == 4 && j > 8 && j < 21) graphic[i][j] = "▩";
-//				else if (i == 25 && j > 8 and j < 21) graphic[i][j] = "▩";
-//				else if (j == 9 && i > 3 and i < 26) graphic[i][j] = "▩";
-//				else if (j == 20 && i > 3 and i < 26) graphic[i][j] = "▩";
-//				else graphic[i][j] = "  ";
-//			}
-//		}
+//	while (1) {
+//		key = getch();
+//		key = getch();
+//		del_block(graphic, block_coors, location[0], location[1]);
+//		move_coors(location, arrow(key));
+//		put_block(graphic, block_coors, location[0], location[1]);
+//		system("cls");
+//		show_graphic(graphic);
+//		printf("%d %d", location[0], location[1]);
 //	}
 //
 //	// 할당된 메모리 해제 (std::vector는 자동으로 관리)

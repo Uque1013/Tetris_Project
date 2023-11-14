@@ -1,5 +1,6 @@
 #include <iostream>
 #include <Windows.h>
+#include <time.h>
 #include <vector>
 #include <string>
 #include <cstdlib> // rand
@@ -9,13 +10,13 @@
 
 using namespace std;
 
-// 키보드값
-# define LEFT 75 // 왼쪽으로 이동
-# define RIGHT 77 // 오른쪽으로 이동
-# define UP 72	// 회전
-# define DOWN 80 // 천천히 drop
-# define SPACE 32 // 빠르게 drop
-# define ESC 27 // 게임 종료 
+//// 키보드값
+//# define LEFT 75 // 왼쪽으로 이동
+//# define RIGHT 77 // 오른쪽으로 이동
+//# define UP 72	// 회전
+//# define DOWN 80 // 천천히 drop
+//# define SPACE 32 // 빠르게 drop
+//# define ESC 27 // 게임 종료 
 
 // 좌표 이동 
 void gotoxy(int x, int y) { //gotoxy함수 
@@ -30,7 +31,6 @@ public:
 		next_type = rand() % 7;
 	}
 
-	static const int shape[7][4][4][4]; // 블록 모양 
 	int x, y; // 좌표
 	int type; // 블록 종류
 	int rotation; // 블록 회전값
@@ -91,7 +91,12 @@ int spin(int n) {
 	if (n == 3) return 0;
 	else return n + 1;
 }
+int anti_spin(int n) {
+	if (n == 0) return 3;
+	else return n - 1;
+}
 
+// 블록 띄우는 함수
 void show_graphic(std::vector<std::vector<std::string>>& p) {
 	for (int i = 0; i < 30; i++) {
 		for (int j = 0; j < 30; j++) {
@@ -109,10 +114,26 @@ int arrow(char key) {
 	default: return -1;
 	}
 }
+int anti_arrow(char key) {
+	switch (key) {
+	case 72: return 0;
+	case 75: return 1;
+	case 77: return 3;
+	case 80: return 2;
+	default: return -1;
+	}
+}
 
-// 블록관련
+void show_coords(std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
+	int i;
+	for (i = 0; i < 4; i++) {
+		printf("%3d%3d", location[0] + block_coors[i][0], location[1] + block_coors[i][1]);
+	}
+}
+
+/* ------------블록관련-------------- */
+// 블록 정보를 받으면 중심기준 점들의 위치를 반환
 void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
-	p.resize(4, std::vector<int>(2));
 	switch (blocktype) {
 	case 0:
 		switch (spinvalue) {
@@ -165,7 +186,7 @@ void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int sp
 			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
 			return;
 		case 1:
-			nums_to_arr(p, 0, 0, 0, 1, 1, -1, 1, 0);
+			nums_to_arr(p, 0, -1, 0, 0, -1, 0, -1, 1);
 			return;
 		case 2:
 			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
@@ -206,6 +227,7 @@ void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int sp
 		}
 	}
 }
+// 좌표, 블록점좌표배열, 기준점을 받으면 블록을 그래픽에 찍음
 void put_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector<int>>& q, int a, int b) {
 	for (int i = 0; i < 4; i++) {
 		int tenpi = a + q[i][0];
@@ -213,14 +235,16 @@ void put_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector
 		p[tenpi][tenpj] = "■";
 	}
 }
+// 좌표, 블록점좌표배열, 기준점을 받으면 블록을 그래픽에서 지움
 void del_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector<int>>& q, int a, int b) {
 	for (int i = 0; i < 4; i++) {
 		int tenpi = a + q[i][0];
 		int tenpj = b + q[i][1];
-		p[tenpi][tenpj] = "■";
+		p[tenpi][tenpj] = "  ";
 	}
 }
-void move_coors(std::vector<int> location, int key) {
+// 기준점, 방향키를 입력받으면 기준점을 변환
+void move_coors(std::vector<int>& location, int key) {
 	int i;
 
 	switch (key) {
@@ -238,6 +262,16 @@ void move_coors(std::vector<int> location, int key) {
 		return;
 	}
 }
+// 블록상대좌표, 기준점을 입력받으면 그래픽에 찍을 수 있는지를 판단
+int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
+	int a, b, i;
+	for (i = 0; i < 4; i++) {
+		a = location[0] + block_coors[i][0];
+		b = location[1] + block_coors[i][1]; // a, b가 각각의 사각형 좌표에 대응
+		if (graphic[a][b] != "  ") return 0;
+	}
+	return 1;
+}
 
 
 
@@ -252,7 +286,7 @@ int main() {
 	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
 	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // 블럭의 상대좌표틀
 	std::vector<int> location(2); // 블럭 중심의 위치
-
+	clock_t start;
 
 	// 기본 설정
 	for (i = 0; i < 30; i++) {
@@ -272,28 +306,58 @@ int main() {
 	testj = 0;
 	block_type_to_coors(block_coors, testi, testj);
 	put_block(graphic, block_coors, location[0], location[1]);
+	system("cls"); // 콘솔창을 지우고 다시 그림
 	show_graphic(graphic);
+	start = clock();
 
 	while (1) {
 		if (kbhit()) {
 			key = getch();
 			if (key == 224) { // 방향키가 입력된 경우
 				key = getch();
-				del_block(graphic, block_coors, location[0], location[1]);
-				move_coors(location, arrow(key));
-				put_block(graphic, block_coors, location[0], location[1]);
-				system("cls");
-				show_graphic(graphic);
-				printf("\n%d %d\n", location[0], location[1]);
+				del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
+				move_coors(location, arrow(key)); // 기준점을 움직임
+				if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
+					put_block(graphic, block_coors, location[0], location[1]);
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic);
+					
+				}
+				else { // 변경된 기준점에 놓을 수 없다면
+					move_coors(location, anti_arrow(key)); // 기준점 원상복귀
+					put_block(graphic, block_coors, location[0], location[1]);
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic); // 다시 찍고 보여줌
+				}
+				
 			}
-			else { // 블럭을 반 시계 방향으로 회전시키는 함수
-				del_block(graphic, block_coors, location[0], location[1]);
-				testj = spin(testj);
-				block_type_to_coors(block_coors, testi, testj);
-				put_block(graphic, block_coors, location[0], location[1]);
-				system("cls");
-				show_graphic(graphic);
+			else { // 회전키가 입력된 경우
+				del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
+				testj = spin(testj); // 블록회전상수를 키움
+				block_type_to_coors(block_coors, testi, testj); // 그거에 맞춰서 블록좌표들을 변환하고
+				if (can_put(graphic, block_coors, location)) { // 놓을 수 있으면
+					put_block(graphic, block_coors, location[0], location[1]);
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic); // 블록 보여주기
+					show_coords(block_coors, location); // test용 좌표확인
+				}
+				else { // 놓을 수 없다면
+					testj = anti_spin(testj); // 블록회전상수를 1줄이고(원상복귀)
+					put_block(graphic, block_coors, location[0], location[1]); // 블록 찍은 다음에
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic); // 블록 보여주기
+					show_coords(block_coors, location); // test용 좌표확인
+				}
+				
 			}
+		}
+		if (0/*(clock() - start) > 999*/) { // 단위시간마다 블록을 떨굼
+			start = clock();
+			del_block(graphic, block_coors, location[0], location[1]);
+			move_coors(location, 2);
+			put_block(graphic, block_coors, location[0], location[1]);
+			system("cls"); // 콘솔창을 지우고 다시 그림
+			show_graphic(graphic);
 		}
 	}
 

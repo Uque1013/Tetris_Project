@@ -275,20 +275,34 @@ int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) {
 }
 // 그래픽을 받으면 줄을 지워주며 그래픽도 보여줌
 void row_clear(std::vector<std::vector<std::string>>& graphic) {
-	int i, j, k;
-	for (i = 24; i > 4; i--) {
+	int i, j, k, high = 4;
+	for (i = 24; i > high; i--) {
 		if (is_row_full(graphic, i)) { // i열이 꽉찼으면
-			for (j = 0; j < 5; j++) { // 열 폭발 그래픽
-				graphic[i][10 + 2 * j] = "▣";
-				graphic[i][10 + 2 * j + 1] = "▣";
-				system("cls");
-				show_graphic(graphic);
-			}
-			for (k = i; k > 4; k--) { // i열부터 위로 쭉
+			graphic[i][10] = "▣";
+			graphic[i][11] = "▣";
+			graphic[i][12] = "▣";
+			system("cls");
+			show_graphic(graphic);
+			graphic[i][13] = "▣";
+			graphic[i][14] = "▣";
+			graphic[i][15] = "▣";
+			system("cls");
+			show_graphic(graphic);
+			graphic[i][16] = "▣";
+			graphic[i][17] = "▣";
+			system("cls");
+			show_graphic(graphic);
+			graphic[i][18] = "▣";
+			graphic[i][19] = "▣";
+			system("cls");
+			show_graphic(graphic);
+			for (k = i; k > high; k--) { // i열부터 위로 쭉
 				for (j = 10; j < 20; j++) { // 모든 열에
 					graphic[k][j] = graphic[k - 1][j];
 				}
 			}
+			i++;
+			high;
 		}
 	}
 }
@@ -327,36 +341,65 @@ int main() {
 	start = clock();
 
 	while (1) {
-		if (kbhit()) {
+		// 키가 눌린 경우
+		if (kbhit()) { 
 			key = getch();
-			if (key == 224) { // 방향키가 입력된 경우
+			// 방향키가 입력된 경우
+			if (key == 224) { 
 				key = getch();
-				del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
-				move_coors(location, arrow(key)); // 기준점을 움직임
-				if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
-					put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
-					system("cls");
-					show_graphic(graphic); // 블록 보여줌 
-				}
-				else { // 변경된 기준점에 놓을 수 없다면
-					if (arrow(key) == 2) { // 아래로 막힌 경우
-						move_coors(location, anti_arrow(key)); // 기준점 원상복귀
-						put_block(graphic, block_coors, location[0], location[1]); // 블럭놓기
-						row_clear(graphic);
-						location[0] = 4;
-						location[1] = 14; // 기준점이 생성되는 점
-						blocktype = rand() % 6;
-						spinvalue = rand() % 4; // 랜덤 블록정보입력
-						block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
-						put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
-						system("cls"); // 콘솔창을 지우고 다시 그림
-						show_graphic(graphic); // 다시 찍고 보여줌
+				// 상 키가 눌린 경우
+				if (arrow(key) == 0) {
+					del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
+					while (1) {
+						move_coors(location, 2); // 기준점을 한칸 내림
+						if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
+							continue;
+						}
+						else { // 변경된 기준점에 놓을 수 없다면
+							move_coors(location, 0); // 기준점 원상복귀
+							put_block(graphic, block_coors, location[0], location[1]); // 블럭놓기
+							row_clear(graphic);
+							location[0] = 4;
+							location[1] = 14; // 기준점이 생성되는 점
+							blocktype = rand() % 6;
+							spinvalue = rand() % 4; // 랜덤 블록정보입력
+							block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
+							put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
+							system("cls"); // 콘솔창을 지우고 다시 그림
+							show_graphic(graphic); // 다시 찍고 보여줌
+							break;
+						}
 					}
-					else { // 좌우가 막힌 경우
-						move_coors(location, anti_arrow(key)); // 기준점 원상복귀
-						put_block(graphic, block_coors, location[0], location[1]);
-						system("cls"); // 콘솔창을 지우고 다시 그림
-						show_graphic(graphic); // 다시 찍고 보여줌
+				}
+				// 좌, 우, 하 키가 눌린 경우
+				else { 
+					del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
+					move_coors(location, arrow(key)); // 기준점을 움직임
+					if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
+						put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
+						system("cls");
+						show_graphic(graphic); // 블록 보여줌 
+					}
+					else { // 변경된 기준점에 놓을 수 없다면
+						if (arrow(key) == 2) { // 아래로 막힌 경우
+							move_coors(location, anti_arrow(key)); // 기준점 원상복귀
+							put_block(graphic, block_coors, location[0], location[1]); // 블럭놓기
+							row_clear(graphic);
+							location[0] = 4;
+							location[1] = 14; // 기준점이 생성되는 점
+							blocktype = rand() % 6;
+							spinvalue = rand() % 4; // 랜덤 블록정보입력
+							block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
+							put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
+							system("cls"); // 콘솔창을 지우고 다시 그림
+							show_graphic(graphic); // 다시 찍고 보여줌
+						}
+						else { // 좌우가 막힌 경우
+							move_coors(location, anti_arrow(key)); // 기준점 원상복귀
+							put_block(graphic, block_coors, location[0], location[1]);
+							system("cls"); // 콘솔창을 지우고 다시 그림
+							show_graphic(graphic); // 다시 찍고 보여줌
+						}
 					}
 				}
 			}

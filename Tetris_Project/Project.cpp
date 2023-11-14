@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <Windows.h>
 #include <time.h>
 #include <vector>
@@ -10,35 +10,27 @@
 
 using namespace std;
 
-//// Å°º¸µå°ª
-//# define LEFT 75 // ¿ŞÂÊÀ¸·Î ÀÌµ¿
-//# define RIGHT 77 // ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
-//# define UP 72	// È¸Àü
-//# define DOWN 80 // ÃµÃµÈ÷ drop
-//# define SPACE 32 // ºü¸£°Ô drop
-//# define ESC 27 // °ÔÀÓ Á¾·á 
-
-// ÁÂÇ¥ ÀÌµ¿ 
-void gotoxy(int x, int y) { //gotoxyÇÔ¼ö 
+// ì¢Œí‘œ ì´ë™ 
+void gotoxy(int x, int y) { //gotoxyí•¨ìˆ˜ 
 	COORD pos = { 2 * x,y };
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
-// ºí·Ï ±¸Çö
+// ë¸”ë¡ êµ¬í˜„
 class Blocks {
 public:
 	Blocks(void) {
 		next_type = rand() % 7;
 	}
 
-	int x, y; // ÁÂÇ¥
-	int type; // ºí·Ï Á¾·ù
-	int rotation; // ºí·Ï È¸Àü°ª
-	int next_type; // ´ÙÀ½ ºí·Ï
-	int getColor(int num); // ºí·Ï »ö±ò ÇÔ¼ö
+	int x, y; // ì¢Œí‘œ
+	int type; // ë¸”ë¡ ì¢…ë¥˜
+	int rotation; // ë¸”ë¡ íšŒì „ê°’
+	int next_type; // ë‹¤ìŒ ë¸”ë¡
+	int getColor(int num); // ë¸”ë¡ ìƒ‰ê¹” í•¨ìˆ˜
 };
 
-// ºí·Ï ÄÃ·¯ ±¸Çö
+// ë¸”ë¡ ì»¬ëŸ¬ êµ¬í˜„
 int Blocks::getColor(int num) {
 	if (num < 0) num *= (-1);
 	return num - 9;
@@ -48,21 +40,21 @@ class Tetris {
 public:
 	Tetris(int game_x, int game_y);
 
-	// ÁÂÇ¥ º¯¼ö
+	// ì¢Œí‘œ ë³€ìˆ˜
 	int game_x;
 	int game_y;
 
 
 };
 
-// °ÔÀÓ Å¸ÀÌÆ²
+// ê²Œì„ íƒ€ì´í‹€
 void GameTitle() {
 	const char* tetris[] = {
-		"¡á¡á¡á  ¡á¡á¡á  ¡á¡á¡á  ¡á¡á¡á    ¡á¡á¡á   ¡á¡á¡á",
-		"  ¡á    ¡á        ¡á	 ¡á    ¡á    ¡á    ¡á",
-		"  ¡á    ¡á¡á¡á    ¡á    ¡á¡á¡á      ¡á     ¡á¡á¡á",
-		"  ¡á    ¡á        ¡á    ¡á   ¡á     ¡á          ¡á",
-		"  ¡á    ¡á¡á¡á    ¡á    ¡á    ¡á  ¡á¡á¡á   ¡á¡á¡á"
+		"â– â– â–   â– â– â–   â– â– â–   â– â– â–     â– â– â–    â– â– â– ",
+		"  â–     â–         â– 	 â–     â–     â–     â– ",
+		"  â–     â– â– â–     â–     â– â– â–       â–      â– â– â– ",
+		"  â–     â–         â–     â–    â–      â–           â– ",
+		"  â–     â– â– â–     â–     â–     â–   â– â– â–    â– â– â– "
 	};
 
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0003);
@@ -76,7 +68,7 @@ void GameTitle() {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 }
 
-// ÆíÀÇ»ó ±¸Çö
+// í¸ì˜ìƒ êµ¬í˜„
 void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
 	p[0][0] = a;
 	p[0][1] = b;
@@ -96,7 +88,7 @@ int anti_spin(int n) {
 	else return n - 1;
 }
 
-// ºí·Ï ¶ç¿ì´Â ÇÔ¼ö
+// ë¸”ë¡ ë„ìš°ëŠ” í•¨ìˆ˜
 void show_graphic(std::vector<std::vector<std::string>>& p) {
 	for (int i = 0; i < 30; i++) {
 		for (int j = 0; j < 30; j++) {
@@ -127,12 +119,12 @@ int anti_arrow(char key) {
 void show_coords(std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
 	int i;
 	for (i = 0; i < 4; i++) {
-		printf("%3d%3d", location[0] + block_coors[i][0], location[1] + block_coors[i][1]);
+		printf("%3d%3d\n", location[0] + block_coors[i][0], location[1] + block_coors[i][1]);
 	}
 }
 
-/* ------------ºí·Ï°ü·Ã-------------- */
-// ºí·Ï Á¤º¸¸¦ ¹ŞÀ¸¸é Áß½É±âÁØ Á¡µéÀÇ À§Ä¡¸¦ ¹İÈ¯
+/* ------------ë¸”ë¡ê´€ë ¨-------------- */
+// ë¸”ë¡ ì •ë³´ë¥¼ ë°›ìœ¼ë©´ ì¤‘ì‹¬ê¸°ì¤€ ì ë“¤ì˜ ìœ„ì¹˜ë¥¼ ë°˜í™˜
 void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
 	switch (blocktype) {
 	case 0:
@@ -227,15 +219,15 @@ void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int sp
 		}
 	}
 }
-// ÁÂÇ¥, ºí·ÏÁ¡ÁÂÇ¥¹è¿­, ±âÁØÁ¡À» ¹ŞÀ¸¸é ºí·ÏÀ» ±×·¡ÇÈ¿¡ ÂïÀ½
+// ì¢Œí‘œ, ë¸”ë¡ì ì¢Œí‘œë°°ì—´, ê¸°ì¤€ì ì„ ë°›ìœ¼ë©´ ë¸”ë¡ì„ ê·¸ë˜í”½ì— ì°ìŒ
 void put_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector<int>>& q, int a, int b) {
 	for (int i = 0; i < 4; i++) {
 		int tenpi = a + q[i][0];
 		int tenpj = b + q[i][1];
-		p[tenpi][tenpj] = "¡á";
+		p[tenpi][tenpj] = "â– ";
 	}
 }
-// ÁÂÇ¥, ºí·ÏÁ¡ÁÂÇ¥¹è¿­, ±âÁØÁ¡À» ¹ŞÀ¸¸é ºí·ÏÀ» ±×·¡ÇÈ¿¡¼­ Áö¿ò
+// ì¢Œí‘œ, ë¸”ë¡ì ì¢Œí‘œë°°ì—´, ê¸°ì¤€ì ì„ ë°›ìœ¼ë©´ ë¸”ë¡ì„ ê·¸ë˜í”½ì—ì„œ ì§€ì›€
 void del_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector<int>>& q, int a, int b) {
 	for (int i = 0; i < 4; i++) {
 		int tenpi = a + q[i][0];
@@ -243,7 +235,7 @@ void del_block(std::vector<std::vector<std::string>>& p, std::vector<std::vector
 		p[tenpi][tenpj] = "  ";
 	}
 }
-// ±âÁØÁ¡, ¹æÇâÅ°¸¦ ÀÔ·Â¹ŞÀ¸¸é ±âÁØÁ¡À» º¯È¯
+// ê¸°ì¤€ì , ë°©í–¥í‚¤ë¥¼ ì…ë ¥ë°›ìœ¼ë©´ ê¸°ì¤€ì ì„ ë³€í™˜
 void move_coors(std::vector<int>& location, int key) {
 	int i;
 
@@ -262,105 +254,157 @@ void move_coors(std::vector<int>& location, int key) {
 		return;
 	}
 }
-// ºí·Ï»ó´ëÁÂÇ¥, ±âÁØÁ¡À» ÀÔ·Â¹ŞÀ¸¸é ±×·¡ÇÈ¿¡ ÂïÀ» ¼ö ÀÖ´ÂÁö¸¦ ÆÇ´Ü
+// ë¸”ë¡ìƒëŒ€ì¢Œí‘œ, ê¸°ì¤€ì ì„ ì…ë ¥ë°›ìœ¼ë©´ ê·¸ë˜í”½ì— ì°ì„ ìˆ˜ ìˆëŠ”ì§€ë¥¼ íŒë‹¨
 int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
 	int a, b, i;
 	for (i = 0; i < 4; i++) {
 		a = location[0] + block_coors[i][0];
-		b = location[1] + block_coors[i][1]; // a, b°¡ °¢°¢ÀÇ »ç°¢Çü ÁÂÇ¥¿¡ ´ëÀÀ
+		b = location[1] + block_coors[i][1]; // a, bê°€ ê°ê°ì˜ ì‚¬ê°í˜• ì¢Œí‘œì— ëŒ€ì‘
 		if (graphic[a][b] != "  ") return 0;
 	}
 	return 1;
 }
 
 
+/* ------------ê²Œì„ì§„í–‰-------------- */
+// ê·¸ë˜í”½, í–‰ì„ ì…ë ¥ë°›ìœ¼ë©´ í•´ë‹¹ í–‰ì´ ê½‰ ì°¼ëŠ”ì§€ íŒë‹¨
+int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) {
+	int j;
+	for (j = 10; j < 20; j++) if (graphic[r][j] == "  ")return 0;
+	return 1;
+}
+// ê·¸ë˜í”½ì„ ë°›ìœ¼ë©´ ì¤„ì„ ì§€ì›Œì£¼ë©° ê·¸ë˜í”½ë„ ë³´ì—¬ì¤Œ
+void row_clear(std::vector<std::vector<std::string>>& graphic) {
+	int i, j, k;
+	for (i = 24; i > 4; i--) {
+		if (is_row_full(graphic, i)) { // iì—´ì´ ê½‰ì°¼ìœ¼ë©´
+			for (j = 0; j < 5; j++) { // ì—´ í­ë°œ ê·¸ë˜í”½
+				graphic[i][10 + 2 * j] = "â–£";
+				graphic[i][10 + 2 * j + 1] = "â–£";
+				system("cls");
+				show_graphic(graphic);
+			}
+			for (k = i; k > 4; k--) { // iì—´ë¶€í„° ìœ„ë¡œ ì­‰
+				for (j = 10; j < 20; j++) { // ëª¨ë“  ì—´ì—
+					graphic[k][j] = graphic[k - 1][j];
+				}
+			}
+		}
+	}
+}
 
-// Å×Æ®¸®½º È­¸é Å©±â ±¸»ó : ´ëºÎºĞ 10*20 »ç¿ë
+// í…ŒíŠ¸ë¦¬ìŠ¤ í™”ë©´ í¬ê¸° êµ¬ìƒ : ëŒ€ë¶€ë¶„ 10*20 ì‚¬ìš©
 int main() {
 	srand((unsigned)time(NULL));
 	// GameTitle();
 
-	// ¢Ì¡à¡á
+	// â–©â–¡â– â–£
 	int i = 0, j = 0, key, a, b;
-	int testi, testj;
-	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // ¹®ÀÚ¿­À» ¿ø¼Ò·Î °®´Â 2Â÷¿ø ¹è¿­
-	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // ºí·°ÀÇ »ó´ëÁÂÇ¥Æ²
-	std::vector<int> location(2); // ºí·° Áß½ÉÀÇ À§Ä¡
+	int blocktype, spinvalue;
+	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // ë¬¸ìì—´ì„ ì›ì†Œë¡œ ê°–ëŠ” 2ì°¨ì› ë°°ì—´
+	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // ë¸”ëŸ­ì˜ ìƒëŒ€ì¢Œí‘œí‹€
+	std::vector<int> location(2); // ë¸”ëŸ­ ì¤‘ì‹¬ì˜ ìœ„ì¹˜
 	clock_t start;
 
-	// ±âº» ¼³Á¤
+	// ê¸°ë³¸ ì„¤ì •
 	for (i = 0; i < 30; i++) {
 		for (j = 0; j < 30; j++) {
-			if (i == 4 && j > 8 && j < 21) graphic[i][j] = "¢Ì";
-			else if (i == 25 && j > 8 && j < 21) graphic[i][j] = "¢Ì";
-			else if (j == 9 && i > 3 && i < 26) graphic[i][j] = "¢Ì";
-			else if (j == 20 && i > 3 && i < 26) graphic[i][j] = "¢Ì";
+			if (i == 25 && j > 8 && j < 21) graphic[i][j] = "â–©";
+			else if (j == 9 && i > 4 && i < 26) graphic[i][j] = "â–©";
+			else if (j == 20 && i > 4 && i < 26) graphic[i][j] = "â–©";
 			else graphic[i][j] = "  ";
 		}
 	}
 
-	location[0] = 15;
-	location[1] = 15; // test¿ë ÁÂÇ¥
-	printf("ºí·° Å¸ÀÔÀ» ÀÔ·ÂÇØ ÁÖ½Ê½Ã¿À: ");
-	scanf_s("%d", &testi);
-	testj = 0;
-	block_type_to_coors(block_coors, testi, testj);
+	location[0] = 4;
+	location[1] = 14; // ê¸°ì¤€ì ì´ ìƒì„±ë˜ëŠ” ì 
+	blocktype = rand() % 6;
+	spinvalue = rand() % 4;
+	block_type_to_coors(block_coors, blocktype, spinvalue);
 	put_block(graphic, block_coors, location[0], location[1]);
-	system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
+	system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
 	show_graphic(graphic);
 	start = clock();
 
 	while (1) {
 		if (kbhit()) {
 			key = getch();
-			if (key == 224) { // ¹æÇâÅ°°¡ ÀÔ·ÂµÈ °æ¿ì
+			if (key == 224) { // ë°©í–¥í‚¤ê°€ ì…ë ¥ëœ ê²½ìš°
 				key = getch();
-				del_block(graphic, block_coors, location[0], location[1]); // ºí·° Áö¿ì±â
-				move_coors(location, arrow(key)); // ±âÁØÁ¡À» ¿òÁ÷ÀÓ
-				if (can_put(graphic, block_coors, location)) { // º¯°æµÈ ±âÁØÁ¡¿¡ ³õÀ» ¼ö ÀÖ´Ù¸é
-					put_block(graphic, block_coors, location[0], location[1]);
-					system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
-					show_graphic(graphic);
-					
+				del_block(graphic, block_coors, location[0], location[1]); // ë¸”ëŸ­ ì§€ìš°ê¸°
+				move_coors(location, arrow(key)); // ê¸°ì¤€ì ì„ ì›€ì§ì„
+				if (can_put(graphic, block_coors, location)) { // ë³€ê²½ëœ ê¸°ì¤€ì ì— ë†“ì„ ìˆ˜ ìˆë‹¤ë©´
+					put_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ë†“ê¸°
+					system("cls");
+					show_graphic(graphic); // ë¸”ë¡ ë³´ì—¬ì¤Œ 
 				}
-				else { // º¯°æµÈ ±âÁØÁ¡¿¡ ³õÀ» ¼ö ¾ø´Ù¸é
-					move_coors(location, anti_arrow(key)); // ±âÁØÁ¡ ¿ø»óº¹±Í
-					put_block(graphic, block_coors, location[0], location[1]);
-					system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
-					show_graphic(graphic); // ´Ù½Ã Âï°í º¸¿©ÁÜ
+				else { // ë³€ê²½ëœ ê¸°ì¤€ì ì— ë†“ì„ ìˆ˜ ì—†ë‹¤ë©´
+					if (arrow(key) == 2) { // ì•„ë˜ë¡œ ë§‰íŒ ê²½ìš°
+						move_coors(location, anti_arrow(key)); // ê¸°ì¤€ì  ì›ìƒë³µê·€
+						put_block(graphic, block_coors, location[0], location[1]); // ë¸”ëŸ­ë†“ê¸°
+						row_clear(graphic);
+						location[0] = 4;
+						location[1] = 14; // ê¸°ì¤€ì ì´ ìƒì„±ë˜ëŠ” ì 
+						blocktype = rand() % 6;
+						spinvalue = rand() % 4; // ëœë¤ ë¸”ë¡ì •ë³´ì…ë ¥
+						block_type_to_coors(block_coors, blocktype, spinvalue); // ë¸”ë¡ì¢Œí‘œ íŒŒì•…
+						put_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ë†“ê¸°
+						system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+						show_graphic(graphic); // ë‹¤ì‹œ ì°ê³  ë³´ì—¬ì¤Œ
+					}
+					else { // ì¢Œìš°ê°€ ë§‰íŒ ê²½ìš°
+						move_coors(location, anti_arrow(key)); // ê¸°ì¤€ì  ì›ìƒë³µê·€
+						put_block(graphic, block_coors, location[0], location[1]);
+						system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+						show_graphic(graphic); // ë‹¤ì‹œ ì°ê³  ë³´ì—¬ì¤Œ
+					}
 				}
-				
 			}
-			else { // È¸ÀüÅ°°¡ ÀÔ·ÂµÈ °æ¿ì
-				del_block(graphic, block_coors, location[0], location[1]); // ºí·Ï Áö¿ì±â
-				testj = spin(testj); // ºí·ÏÈ¸Àü»ó¼ö¸¦ Å°¿ò
-				block_type_to_coors(block_coors, testi, testj); // ±×°Å¿¡ ¸ÂÃç¼­ ºí·ÏÁÂÇ¥µéÀ» º¯È¯ÇÏ°í
-				if (can_put(graphic, block_coors, location)) { // ³õÀ» ¼ö ÀÖÀ¸¸é
+			else { // íšŒì „í‚¤ê°€ ì…ë ¥ëœ ê²½ìš°
+				del_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ì§€ìš°ê¸°
+				spinvalue = spin(spinvalue); // ë¸”ë¡íšŒì „ìƒìˆ˜ë¥¼ í‚¤ì›€
+				block_type_to_coors(block_coors, blocktype, spinvalue); // ê·¸ê±°ì— ë§ì¶°ì„œ ë¸”ë¡ì¢Œí‘œë“¤ì„ ë³€í™˜í•˜ê³ 
+				if (can_put(graphic, block_coors, location)) { // ë†“ì„ ìˆ˜ ìˆìœ¼ë©´
 					put_block(graphic, block_coors, location[0], location[1]);
-					system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
-					show_graphic(graphic); // ºí·Ï º¸¿©ÁÖ±â
-					show_coords(block_coors, location); // test¿ë ÁÂÇ¥È®ÀÎ
+					system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+					show_graphic(graphic); // ë¸”ë¡ ë³´ì—¬ì£¼ê¸°
 				}
-				else { // ³õÀ» ¼ö ¾ø´Ù¸é
-					testj = anti_spin(testj); // ºí·ÏÈ¸Àü»ó¼ö¸¦ 1ÁÙÀÌ°í(¿ø»óº¹±Í)
-					put_block(graphic, block_coors, location[0], location[1]); // ºí·Ï ÂïÀº ´ÙÀ½¿¡
-					system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
-					show_graphic(graphic); // ºí·Ï º¸¿©ÁÖ±â
-					show_coords(block_coors, location); // test¿ë ÁÂÇ¥È®ÀÎ
+				else { // ë†“ì„ ìˆ˜ ì—†ë‹¤ë©´
+					spinvalue = spin(spinvalue); // ë¸”ë¡íšŒì „ìƒìˆ˜ë¥¼ 1ì¤„ì´ê³ (ì›ìƒë³µê·€)
+					block_type_to_coors(block_coors, blocktype, spinvalue);
+					put_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ì°ì€ ë‹¤ìŒì—
+					system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+					show_graphic(graphic); // ë¸”ë¡ ë³´ì—¬ì£¼ê¸°
 				}
 				
 			}
 		}
-		if (0/*(clock() - start) > 999*/) { // ´ÜÀ§½Ã°£¸¶´Ù ºí·ÏÀ» ¶³±À
+		if ((clock() - start) > 1499) { // ë‹¨ìœ„ì‹œê°„ë§ˆë‹¤ ë¸”ë¡ì„ ë–¨êµ¼
 			start = clock();
-			del_block(graphic, block_coors, location[0], location[1]);
-			move_coors(location, 2);
-			put_block(graphic, block_coors, location[0], location[1]);
-			system("cls"); // ÄÜ¼ÖÃ¢À» Áö¿ì°í ´Ù½Ã ±×¸²
-			show_graphic(graphic);
+			del_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ì„ ì§€ìš°ê³ 
+			move_coors(location, 2); // ê¸°ì¤€ì ì„ ì›€ì§ì„
+			if (can_put(graphic, block_coors, location)) { // ë³€ê²½ëœ ê¸°ì¤€ì ì— ë†“ì„ ìˆ˜ ìˆìœ¼ë©´
+				put_block(graphic, block_coors, location[0], location[1]);
+				system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+				show_graphic(graphic);
+			}
+			else { // ë³€ê²½ëœ ê¸°ì¤€ì ì— ë†“ì„ ìˆ˜ ì—†ë‹¤ë©´
+				move_coors(location, 0); // ê¸°ì¤€ì  ì›ìƒë³µê·€
+				put_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ë†“ê¸°
+				row_clear(graphic);
+				location[0] = 4;
+				location[1] = 14; // ê¸°ì¤€ì ì´ ìƒì„±ë˜ëŠ” ì 
+				blocktype = rand() % 6;
+				spinvalue = rand() % 4; // ëœë¤ ë¸”ë¡ì •ë³´ì…ë ¥
+				block_type_to_coors(block_coors, blocktype, spinvalue); // ë¸”ë¡ì¢Œí‘œ íŒŒì•…
+				put_block(graphic, block_coors, location[0], location[1]); // ë¸”ë¡ ë†“ê¸°
+				system("cls"); // ì½˜ì†”ì°½ì„ ì§€ìš°ê³  ë‹¤ì‹œ ê·¸ë¦¼
+				show_graphic(graphic); // ë¸”ë¡ ë³´ì—¬ì¤Œ 
+
+			}
 		}
 	}
 
-	// ÇÒ´çµÈ ¸Ş¸ğ¸® ÇØÁ¦ (std::vector´Â ÀÚµ¿À¸·Î °ü¸®)
+	// í• ë‹¹ëœ ë©”ëª¨ë¦¬ í•´ì œ (std::vectorëŠ” ìë™ìœ¼ë¡œ ê´€ë¦¬)
 	return 0;
 }

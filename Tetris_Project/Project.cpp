@@ -68,7 +68,7 @@ void show_graphic(std::vector<std::vector<std::string>>& p) {
 		}
 		std::cout << std::endl;
 	}
-	std::cout << "			현재점수 : " << point;
+	std::cout << "			현재점수 : " << point << std::endl;
 	return;
 }
 int arrow(char key) {
@@ -375,7 +375,7 @@ int main() {
 								put_block(graphic, next_block_coors, 7, 24);
 								system("cls"); // 콘솔창을 지우고 다시 그림
 								show_graphic(graphic); // 다시 찍고 보여줌
-								printf("게임오버");
+								printf("			게임오버");
 								return 0;
 							}
 							break;
@@ -417,7 +417,7 @@ int main() {
 								put_block(graphic, next_block_coors, 7, 24);
 								system("cls"); // 콘솔창을 지우고 다시 그림
 								show_graphic(graphic); // 다시 찍고 보여줌
-								printf("게임오버");
+								printf("			게임오버");
 								return 0;
 							}
 						}
@@ -484,7 +484,7 @@ int main() {
 					put_block(graphic, next_block_coors, 7, 24);
 					system("cls"); // 콘솔창을 지우고 다시 그림
 					show_graphic(graphic); // 다시 찍고 보여줌
-					printf("게임오버");
+					printf("			게임오버");
 					return 0;
 				}
 

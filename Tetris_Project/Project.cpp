@@ -16,37 +16,6 @@ void gotoxy(int x, int y) { //gotoxy함수
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
-// 블록 구현
-class Blocks {
-public:
-	Blocks(void) {
-		next_type = rand() % 7;
-	}
-
-	int x, y; // 좌표
-	int type; // 블록 종류
-	int rotation; // 블록 회전값
-	int next_type; // 다음 블록
-	int getColor(int num); // 블록 색깔 함수
-};
-
-// 블록 컬러 구현
-int Blocks::getColor(int num) {
-	if (num < 0) num *= (-1);
-	return num - 9;
-}
-
-class Tetris {
-public:
-	Tetris(int game_x, int game_y);
-
-	// 좌표 변수
-	int game_x;
-	int game_y;
-
-
-};
-
 // 게임 타이틀
 void GameTitle() {
 	const char* tetris[] = {
@@ -67,6 +36,8 @@ void GameTitle() {
 
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 }
+
+int point = 0;
 
 // 편의상 구현
 void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
@@ -90,12 +61,15 @@ int anti_spin(int n) {
 
 // 블록 띄우는 함수
 void show_graphic(std::vector<std::vector<std::string>>& p) {
-	for (int i = 0; i < 30; i++) {
-		for (int j = 0; j < 30; j++) {
+	int i, j = 0;
+	for (i = 0; i < 30; i++) {
+		for (j = 0; j < 30; j++) {
 			std::cout << p[i][j];
 		}
 		std::cout << std::endl;
 	}
+	std::cout << "			현재점수 : " << point;
+	return;
 }
 int arrow(char key) {
 	switch (key) {
@@ -115,12 +89,20 @@ int anti_arrow(char key) {
 	default: return -1;
 	}
 }
-
 void show_coords(std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
 	int i;
 	for (i = 0; i < 4; i++) {
 		printf("%3d%3d\n", location[0] + block_coors[i][0], location[1] + block_coors[i][1]);
 	}
+}
+void coor_to_coor(std::vector<std::vector<int>>& p, std::vector<std::vector<int>>& q) {
+	int i, j;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			p[i][j] = q[i][j];
+		}
+	}
+	return;
 }
 
 /* ------------블록관련-------------- */
@@ -260,6 +242,7 @@ int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vec
 	for (i = 0; i < 4; i++) {
 		a = location[0] + block_coors[i][0];
 		b = location[1] + block_coors[i][1]; // a, b가 각각의 사각형 좌표에 대응
+		if ((b < 10) || (b > 19)) return 0;
 		if (graphic[a][b] != "  ") return 0;
 	}
 	return 1;
@@ -303,6 +286,7 @@ void row_clear(std::vector<std::vector<std::string>>& graphic) {
 			}
 			i++;
 			high;
+			point += 1000;
 		}
 	}
 }
@@ -314,10 +298,15 @@ int main() {
 
 	// ▩□■▣
 	int i = 0, j = 0, key, a, b;
-	int blocktype, spinvalue;
+	int blocktype, spinvalue, next_blocktype, next_spinvalue;
 	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
 	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // 블럭의 상대좌표틀
+	std::vector<std::vector<int>> next_block_coors(4, std::vector<int>(2));
 	std::vector<int> location(2); // 블럭 중심의 위치
+	std::vector<int> tl(2); // 블럭 중심의 위치
+	tl[0] = 7;
+	tl[1] = 24;
+
 	clock_t start;
 
 	// 기본 설정
@@ -334,8 +323,12 @@ int main() {
 	location[1] = 14; // 기준점이 생성되는 점
 	blocktype = rand() % 6;
 	spinvalue = rand() % 4;
+	next_blocktype = rand() % 6;
+	next_spinvalue = rand() % 4;
 	block_type_to_coors(block_coors, blocktype, spinvalue);
+	block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue);
 	put_block(graphic, block_coors, location[0], location[1]);
+	put_block(graphic, next_block_coors, 7, 24);
 	system("cls"); // 콘솔창을 지우고 다시 그림
 	show_graphic(graphic);
 	start = clock();
@@ -344,9 +337,11 @@ int main() {
 		// 키가 눌린 경우
 		if (kbhit()) { 
 			key = getch();
+
 			// 방향키가 입력된 경우
 			if (key == 224) { 
 				key = getch();
+
 				// 상 키가 눌린 경우
 				if (arrow(key) == 0) {
 					del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
@@ -361,12 +356,28 @@ int main() {
 							row_clear(graphic);
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
-							blocktype = rand() % 6;
-							spinvalue = rand() % 4; // 랜덤 블록정보입력
-							block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
-							put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
-							system("cls"); // 콘솔창을 지우고 다시 그림
-							show_graphic(graphic); // 다시 찍고 보여줌
+							del_block(graphic, next_block_coors, 7, 24);
+							coor_to_coor(block_coors, next_block_coors);
+							blocktype = next_blocktype;
+							spinvalue = next_spinvalue;
+							next_blocktype = rand() % 6;
+							next_spinvalue = rand() % 4; // 랜덤 블록정보입력
+							block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+
+							if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+								put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+								put_block(graphic, next_block_coors, 7, 24);
+								system("cls"); // 콘솔창을 지우고 다시 그림
+								show_graphic(graphic); // 다시 찍고 보여줌
+							}
+							else { // 새 블록 생성할 자리가 없음
+								put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+								put_block(graphic, next_block_coors, 7, 24);
+								system("cls"); // 콘솔창을 지우고 다시 그림
+								show_graphic(graphic); // 다시 찍고 보여줌
+								printf("게임오버");
+								return 0;
+							}
 							break;
 						}
 					}
@@ -382,17 +393,33 @@ int main() {
 					}
 					else { // 변경된 기준점에 놓을 수 없다면
 						if (arrow(key) == 2) { // 아래로 막힌 경우
-							move_coors(location, anti_arrow(key)); // 기준점 원상복귀
+							move_coors(location, 0); // 기준점 원상복귀
 							put_block(graphic, block_coors, location[0], location[1]); // 블럭놓기
 							row_clear(graphic);
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
-							blocktype = rand() % 6;
-							spinvalue = rand() % 4; // 랜덤 블록정보입력
-							block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
-							put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
-							system("cls"); // 콘솔창을 지우고 다시 그림
-							show_graphic(graphic); // 다시 찍고 보여줌
+							del_block(graphic, next_block_coors, 7, 24);
+							// coor_to_coor(block_coors, next_block_coors);
+							blocktype = next_blocktype;
+							spinvalue = next_spinvalue;
+							next_blocktype = rand() % 6;
+							next_spinvalue = rand() % 4; // 랜덤 블록정보입력
+							block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+							
+							if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+								put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+								put_block(graphic, next_block_coors, 7, 24);
+								system("cls"); // 콘솔창을 지우고 다시 그림
+								show_graphic(graphic); // 다시 찍고 보여줌
+							}
+							else { // 새 블록 생성할 자리가 없음
+								put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+								put_block(graphic, next_block_coors, 7, 24);
+								system("cls"); // 콘솔창을 지우고 다시 그림
+								show_graphic(graphic); // 다시 찍고 보여줌
+								printf("게임오버");
+								return 0;
+							}
 						}
 						else { // 좌우가 막힌 경우
 							move_coors(location, anti_arrow(key)); // 기준점 원상복귀
@@ -413,7 +440,7 @@ int main() {
 					show_graphic(graphic); // 블록 보여주기
 				}
 				else { // 놓을 수 없다면
-					spinvalue = spin(spinvalue); // 블록회전상수를 1줄이고(원상복귀)
+					spinvalue = anti_spin(spinvalue); // 블록회전상수를 1줄이고(원상복귀)
 					block_type_to_coors(block_coors, blocktype, spinvalue);
 					put_block(graphic, block_coors, location[0], location[1]); // 블록 찍은 다음에
 					system("cls"); // 콘솔창을 지우고 다시 그림
@@ -422,7 +449,9 @@ int main() {
 				
 			}
 		}
-		if ((clock() - start) > 1499) { // 단위시간마다 블록을 떨굼
+
+		// 단위시간마다 블록을 떨굼
+		if ((clock() - start) > 1499) {
 			start = clock();
 			del_block(graphic, block_coors, location[0], location[1]); // 블록을 지우고
 			move_coors(location, 2); // 기준점을 움직임
@@ -433,16 +462,31 @@ int main() {
 			}
 			else { // 변경된 기준점에 놓을 수 없다면
 				move_coors(location, 0); // 기준점 원상복귀
-				put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
+				put_block(graphic, block_coors, location[0], location[1]); // 블럭놓기
 				row_clear(graphic);
 				location[0] = 4;
 				location[1] = 14; // 기준점이 생성되는 점
-				blocktype = rand() % 6;
-				spinvalue = rand() % 4; // 랜덤 블록정보입력
-				block_type_to_coors(block_coors, blocktype, spinvalue); // 블록좌표 파악
-				put_block(graphic, block_coors, location[0], location[1]); // 블록 놓기
-				system("cls"); // 콘솔창을 지우고 다시 그림
-				show_graphic(graphic); // 블록 보여줌 
+				del_block(graphic, next_block_coors, 7, 24);
+				// coor_to_coor(block_coors, next_block_coors);
+				blocktype = next_blocktype;
+				spinvalue = next_spinvalue;
+				next_blocktype = rand() % 6;
+				next_spinvalue = rand() % 4; // 랜덤 블록정보입력
+				block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+				if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+					put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+					put_block(graphic, next_block_coors, 7, 24);
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic); // 다시 찍고 보여줌
+				}
+				else { // 새 블록 생성할 자리가 없음
+					put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
+					put_block(graphic, next_block_coors, 7, 24);
+					system("cls"); // 콘솔창을 지우고 다시 그림
+					show_graphic(graphic); // 다시 찍고 보여줌
+					printf("게임오버");
+					return 0;
+				}
 
 			}
 		}

@@ -1,10 +1,10 @@
 ﻿#include <iostream>
-#include <Windows.h>
-#include <time.h>
 #include <vector>
 #include <string>
 #include <cstdlib> // rand
 #include <ctime> // time
+#include <Windows.h>
+#include <time.h>
 #include <conio.h>
 #pragma warning(disable : 4996) warning pragma
 
@@ -37,9 +37,10 @@ void GameTitle() {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 }
 
-int point = 0;
+// 점수
+int point = 0; 
 
-// 편의상 구현
+// 2차원 배열로 각 블록들의 모양을 표현함
 void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
 	p[0][0] = a;
 	p[0][1] = b;
@@ -50,10 +51,12 @@ void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, i
 	p[3][0] = g;
 	p[3][1] = h;
 }
+// 시계 방향으로 회전
 int spin(int n) {
 	if (n == 3) return 0;
 	else return n + 1;
 }
+// 반 시계 방향으로 회전 (벽면에 닿거나 다른 블록들과 닿았을 때 발현)
 int anti_spin(int n) {
 	if (n == 0) return 3;
 	else return n - 1;
@@ -89,12 +92,7 @@ int anti_arrow(char key) {
 	default: return -1;
 	}
 }
-void show_coords(std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
-	int i;
-	for (i = 0; i < 4; i++) {
-		printf("%3d%3d\n", location[0] + block_coors[i][0], location[1] + block_coors[i][1]);
-	}
-}
+// 에러나서 사용안함
 void coor_to_coor(std::vector<std::vector<int>>& p, std::vector<std::vector<int>>& q) {
 	int i, j;
 	for (i = 0; i < 4; i++) {
@@ -286,17 +284,17 @@ void row_clear(std::vector<std::vector<std::string>>& graphic) {
 			}
 			i++;
 			high;
-			point += 1000;
+			point += 1000; // 한 줄씩 사라질 때마다 포인트가 1000점씩 올라감
 		}
 	}
 }
 
+// 사용 블럭들 : ▩□■▣
 // 테트리스 화면 크기 구상 : 대부분 10*20 사용
 int main() {
 	srand((unsigned)time(NULL));
-	// GameTitle();
+	GameTitle();
 
-	// ▩□■▣
 	int i = 0, j = 0, key, a, b;
 	int blocktype, spinvalue, next_blocktype, next_spinvalue;
 	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
@@ -357,7 +355,7 @@ int main() {
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
 							del_block(graphic, next_block_coors, 7, 24);
-							coor_to_coor(block_coors, next_block_coors);
+							// coor_to_coor(block_coors, next_block_coors); // 에러나서 사용 안함
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
@@ -446,7 +444,6 @@ int main() {
 					system("cls"); // 콘솔창을 지우고 다시 그림
 					show_graphic(graphic); // 블록 보여주기
 				}
-				
 			}
 		}
 
@@ -487,7 +484,6 @@ int main() {
 					printf("			게임오버");
 					return 0;
 				}
-
 			}
 		}
 	}

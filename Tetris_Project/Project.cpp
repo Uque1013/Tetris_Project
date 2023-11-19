@@ -34,7 +34,12 @@ void GameTitle() {
 		Sleep(200);
 	}
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007); 
+
+	cout << "\n";
+	cout << "\n		    Press any key to start...";
+	_getch(); // 아무 키나 입력받음
+	system("cls"); // 콘솔 창 지우기
 }
 
 // 점수

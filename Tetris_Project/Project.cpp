@@ -1,10 +1,9 @@
 ﻿#include <iostream>
 #include <vector>
 #include <string>
-#include <cstdlib> // rand
-#include <ctime> // time
+#include <cstdlib>
+#include <ctime>
 #include <Windows.h>
-#include <time.h>
 #include <conio.h>
 #pragma warning(disable : 4996) warning pragma
 
@@ -72,38 +71,27 @@ void setcursortype(CURSOR_TYPE c) {
 int point = 0;
 
 // 2차원 배열로 각 블록들의 모양을 표현함
-void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
-	p[0][0] = a;
-	p[0][1] = b;
-	p[1][0] = c;
-	p[1][1] = d;
-	p[2][0] = e;
-	p[2][1] = f;
-	p[3][0] = g;
-	p[3][1] = h;
+void nums_to_arr(vector<vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
+	p = { {a, b}, {c, d}, {e, f}, {g, h} };
 }
 // 시계 방향으로 회전
 int spin(int n) {
-	if (n == 3) return 0;
-	else return n + 1;
+	return (n == 3) ? 0 : n + 1;
 }
 // 반 시계 방향으로 회전 (벽면에 닿거나 다른 블록들과 닿았을 때 발현)
 int anti_spin(int n) {
-	if (n == 0) return 3;
-	else return n - 1;
+	return (n == 0) ? 3 : n - 1;
 }
 
 // 블록 띄우는 함수
-void show_graphic(std::vector<std::vector<std::string>>& p) {
-	int i, j = 0;
-	for (i = 0; i < 30; i++) {
-		for (j = 0; j < 30; j++) {
-			std::cout << p[i][j];
+void show_graphic(const vector<vector<string>>& p) {
+	for (const auto& row : p) {
+		for (const auto& cell : row) {
+			cout << cell;
 		}
-		std::cout << std::endl;
+		cout << endl;
 	}
-	std::cout << "			현재점수 : " << point << std::endl;
-	return;
+	cout << "			현재점수 : " << point << endl;
 }
 int arrow(char key) {
 	switch (key) {
@@ -380,6 +368,7 @@ int main() {
 				cin >> response;
 				if (response == 'Y' || response == 'y') {
 					cout << "게임을 종료합니다." << endl;
+					cout << "득점 : " << point << endl;
 					break;
 				}
 				else {

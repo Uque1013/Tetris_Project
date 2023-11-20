@@ -38,8 +38,16 @@ public:
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 
-		cout << "\n";
-		cout << "\n		    Press any key to start...";
+		gotoxy(10, 12); cout << ("┌─<  Key Instructions  >─┐");
+		gotoxy(10, 13); cout << ("│       HARD DROP    ↑    │");
+		gotoxy(10, 14); cout << ("│       RIGHT        →    │");
+		gotoxy(10, 15); cout << ("│       LEFT         ←    │");
+		gotoxy(10, 16); cout << ("│       SOFT DROP    ↓    │");
+		gotoxy(10, 17); cout << ("│       TURN       SPACE   │");
+		gotoxy(10, 18); cout << ("└─────────────┘");
+
+		cout << "\n\n";
+		cout << "		      Press any key to start...";
 		_getch(); // 아무 키나 입력받음
 		system("cls"); // 콘솔 창 지우기
 	}
@@ -70,7 +78,7 @@ void setcursortype(CURSOR_TYPE c) {
 // 점수
 int point = 0;
 
-// 2차원 배열로 각 블록들의 모양을 표현함
+// 2차원 벡터 초기화 및 주어진 8개의 정수를 해당 벡터에 할당 (8개의 블록 모양 구현 시 사용)
 void nums_to_arr(vector<vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
 	p = { {a, b}, {c, d}, {e, f}, {g, h} };
 }

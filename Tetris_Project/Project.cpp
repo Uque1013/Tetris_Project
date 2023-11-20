@@ -46,6 +46,28 @@ public:
 	}
 };
 
+// 커서 안 보이게 하는 함수
+typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
+void setcursortype(CURSOR_TYPE c) {
+	CONSOLE_CURSOR_INFO CurInfo;
+
+	switch (c) {
+	case NOCURSOR:
+		CurInfo.dwSize = 1;
+		CurInfo.bVisible = FALSE;
+		break;
+	case SOLIDCURSOR:
+		CurInfo.dwSize = 100;
+		CurInfo.bVisible = TRUE;
+		break;
+	case NORMALCURSOR:
+		CurInfo.dwSize = 20;
+		CurInfo.bVisible = TRUE;
+		break;
+	}
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
+}
+
 // 점수
 int point = 0;
 
@@ -304,7 +326,8 @@ void row_clear(std::vector<std::vector<std::string>>& graphic) {
 // 테트리스 화면 크기 구상 : 대부분 10*20 사용
 int main() {
 	srand((unsigned)time(NULL));
-	GameUI::GameTitle();
+	GameUI::GameTitle(); // 게임 타이틀
+	setcursortype(NOCURSOR); //커서 없앰 
 
 	int i = 0, j = 0, key, a, b;
 	int blocktype, spinvalue, next_blocktype, next_spinvalue;

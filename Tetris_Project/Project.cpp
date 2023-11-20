@@ -370,6 +370,25 @@ int main() {
 		if (kbhit()) {
 			key = getch();
 
+			// ESC 키가 눌린 경우
+			if (key == 27) {
+				system("cls");
+				cout << "게임을 종료하시겠습니까? (Y/N): ";
+
+				// 사용자의 응답 확인
+				char response;
+				cin >> response;
+				if (response == 'Y' || response == 'y') {
+					cout << "게임을 종료합니다." << endl;
+					break;
+				}
+				else {
+					// 게임 계속 진행
+					system("cls");
+					show_graphic(graphic);
+				}
+			}
+
 			// 방향키가 입력된 경우
 			if (key == 224) {
 				key = getch();

@@ -10,40 +10,44 @@
 
 using namespace std;
 
-// 좌표 이동 
-void gotoxy(int x, int y) { //gotoxy함수 
-	COORD pos = { 2 * x,y };
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
+// 게임 타이틀 출력
+class GameUI {
+public:
+	// gotoxy 함수 로직
+	static void gotoxy(int x, int y) {
+		COORD pos = { static_cast<SHORT>(2 * x), static_cast<SHORT>(y) };
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+	}
 
-// 게임 타이틀
-void GameTitle() {
-	const char* tetris[] = {
+	// 게임 타이틀
+	static void GameTitle() {
+		const char* tetris[] = {
 		"■■■  ■■■  ■■■  ■■■    ■■■   ■■■",
 		"  ■    ■        ■	 ■    ■    ■    ■",
 		"  ■    ■■■    ■    ■■■      ■     ■■■",
 		"  ■    ■        ■    ■   ■     ■          ■",
 		"  ■    ■■■    ■    ■    ■  ■■■   ■■■"
-	};
+		};
 
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0003);
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0003);
 
-	for (int i = 0; i < 5; i++) {
-		gotoxy(10, 5 + i);
-		cout << tetris[i];
-		Sleep(200);
+		for (int i = 0; i < 5; i++) {
+			gotoxy(10, 5 + i);
+			cout << tetris[i];
+			Sleep(200);
+		}
+
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
+
+		cout << "\n";
+		cout << "\n		    Press any key to start...";
+		_getch(); // 아무 키나 입력받음
+		system("cls"); // 콘솔 창 지우기
 	}
-
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007); 
-
-	cout << "\n";
-	cout << "\n		    Press any key to start...";
-	_getch(); // 아무 키나 입력받음
-	system("cls"); // 콘솔 창 지우기
-}
+};
 
 // 점수
-int point = 0; 
+int point = 0;
 
 // 2차원 배열로 각 블록들의 모양을 표현함
 void nums_to_arr(std::vector<std::vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
@@ -294,11 +298,13 @@ void row_clear(std::vector<std::vector<std::string>>& graphic) {
 	}
 }
 
-// 사용 블럭들 : ▩□■▣
+// 경계선 : ▩
+// 테트리스 블록 : ■
+// 테트리스 줄 완성 블록 : ▣
 // 테트리스 화면 크기 구상 : 대부분 10*20 사용
 int main() {
 	srand((unsigned)time(NULL));
-	GameTitle();
+	GameUI::GameTitle();
 
 	int i = 0, j = 0, key, a, b;
 	int blocktype, spinvalue, next_blocktype, next_spinvalue;
@@ -312,7 +318,7 @@ int main() {
 
 	clock_t start;
 
-	// 기본 설정
+	// 테트리스 블록 가두는 벽
 	for (i = 0; i < 30; i++) {
 		for (j = 0; j < 30; j++) {
 			if (i == 25 && j > 8 && j < 21) graphic[i][j] = "▩";
@@ -326,7 +332,7 @@ int main() {
 	location[1] = 14; // 기준점이 생성되는 점
 	blocktype = rand() % 6;
 	spinvalue = rand() % 4;
-	next_blocktype = rand() % 6;
+	next_blocktype = rand() % 6; // 다음 블록 타입 
 	next_spinvalue = rand() % 4;
 	block_type_to_coors(block_coors, blocktype, spinvalue);
 	block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue);
@@ -338,11 +344,11 @@ int main() {
 
 	while (1) {
 		// 키가 눌린 경우
-		if (kbhit()) { 
+		if (kbhit()) {
 			key = getch();
 
 			// 방향키가 입력된 경우
-			if (key == 224) { 
+			if (key == 224) {
 				key = getch();
 
 				// 상 키가 눌린 경우
@@ -386,7 +392,7 @@ int main() {
 					}
 				}
 				// 좌, 우, 하 키가 눌린 경우
-				else { 
+				else {
 					del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
 					move_coors(location, arrow(key)); // 기준점을 움직임
 					if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
@@ -408,7 +414,7 @@ int main() {
 							next_blocktype = rand() % 6;
 							next_spinvalue = rand() % 4; // 랜덤 블록정보입력
 							block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
-							
+
 							if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
 								put_block(graphic, block_coors, location[0], location[1]); // 블럭 놓기
 								put_block(graphic, next_block_coors, 7, 24);

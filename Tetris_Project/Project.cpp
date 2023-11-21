@@ -38,17 +38,15 @@ public:
 
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x0007);
 
-		gotoxy(10, 12); cout << ("┌─<  Key Instructions  >─┐");
-		gotoxy(10, 13); cout << ("│       HARD DROP    ↑    │");
-		gotoxy(10, 14); cout << ("│       RIGHT        →    │");
-		gotoxy(10, 15); cout << ("│       LEFT         ←    │");
-		gotoxy(10, 16); cout << ("│       SOFT DROP    ↓    │");
-		gotoxy(10, 17); cout << ("│       TURN       SPACE   │");
-		gotoxy(10, 18); cout << ("│     YELLOW BlOCKS   0    │");
-		gotoxy(10, 19); cout << ("│      GRENN BlOCKS   1    │");
-		gotoxy(10, 20); cout << ("│      WHITE BlOCKS   2    │");
-		gotoxy(10, 21); cout << ("│       BLUE BlOCKS   3    │");
-		gotoxy(10, 22); cout << ("└─────────────┘");
+		gotoxy(10, 12); cout << ("┌─<  Key Instructions    |    Block Colors >─┐");
+		gotoxy(10, 13); cout << ("│       HARD DROP    ↑   |   YELLOW BLOCKS  0 │");
+		gotoxy(10, 14); cout << ("│       RIGHT        →   |    GRENN BLOCKS  1 │");
+		gotoxy(10, 15); cout << ("│       LEFT         ←   |    WHITE BLOCKS  2 │");
+		gotoxy(10, 16); cout << ("│       SOFT DROP    ↓   |     BLUE BLOCKS  3 │");
+		gotoxy(10, 17); cout << ("│       TURN       SPACE  |      RED BLOCKS  4 │");
+		gotoxy(10, 18); cout << ("│       RESTART      R    |   PURPLE BLOCKS  5 │");
+		gotoxy(10, 19); cout << ("│       EXIT        ESC   |     MINT BLOCKS  6 │");
+		gotoxy(10, 20); cout << ("└───────────────────────┘");
 
 		cout << "\n\n";
 		cout << "		      Press any key to start...";
@@ -82,7 +80,7 @@ void setcursortype(CURSOR_TYPE c) {
 // 점수
 int point = 0;
 
-// 2차원 벡터 초기화 및 주어진 8개의 정수를 해당 벡터에 할당 (8개의 블록 모양 구현 시 사용)
+// 2차원 벡터 초기화 및 주어진 8개의 정수를 해당 벡터에 할당 (블록의 상대좌표를 구현할 때 편의하게 사용하기 위해 작성함)
 void nums_to_arr(vector<vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
 	p = { {a, b}, {c, d}, {e, f}, {g, h} };
 }
@@ -105,6 +103,7 @@ void show_graphic(const vector<vector<string>>& p) {
 	}
 	cout << "			현재점수 : " << point << endl;
 }
+// 방향키 입력
 int arrow(char key) {
 	switch (key) {
 	case 72: return 0;
@@ -126,6 +125,7 @@ int anti_arrow(char key) {
 
 /* ------------블록관련-------------- */
 // 블록 정보를 받으면 중심기준 점들의 위치를 반환
+// 블록의 종류는 총 6개로, 블록의 상태를 입력받으면 상대좌표를 리턴함
 void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
 	switch (blocktype) {
 	case 0:
@@ -238,6 +238,15 @@ void put_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b, 
 		else if (color == 3) {
 			SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 		}
+		else if (color == 4) {
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+		}
+		else if (color == 5) {
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		}
+		else if (color == 6) {
+			SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		}
 		p[tenpi][tenpj] = "■"; // 블록 크기만큼 색상 변경
 	}
 }
@@ -285,7 +294,7 @@ int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vec
 
 /* ------------게임진행-------------- */
 // 그래픽, 행을 입력받으면 해당 행이 꽉 찼는지 판단
-int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) {
+int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) { // r = row
 	int j;
 	for (j = 10; j < 20; j++) if (graphic[r][j] == "  ")return 0;
 	return 1;
@@ -408,7 +417,15 @@ int main() {
 			else if (key == '3') { // 파랑색 블록 
 				blockColor = 3;
 			}
-
+			else if (key == '4') { // 빨강색 블록 
+				blockColor = 4;
+			}
+			else if (key == '5') { // 보라색 블록 
+				blockColor = 5;
+			}
+			else if (key == '6') { // 민트색 블록 
+				blockColor = 6;
+			}
 
 			// 방향키가 입력된 경우
 			if (key == 224) {

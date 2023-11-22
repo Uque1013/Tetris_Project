@@ -43,7 +43,7 @@ public:
 		gotoxy(10, 14); cout << ("│       RIGHT        →   |    GRENN BLOCKS  1 │");
 		gotoxy(10, 15); cout << ("│       LEFT         ←   |    WHITE BLOCKS  2 │");
 		gotoxy(10, 16); cout << ("│       SOFT DROP    ↓   |     BLUE BLOCKS  3 │");
-		gotoxy(10, 17); cout << ("│       TURN       SPACE  |      RED BLOCKS  4 │");
+		gotoxy(10, 17); cout << ("│       TURN      ANY KEY |      RED BLOCKS  4 │");
 		gotoxy(10, 18); cout << ("│       RESTART      R    |   PURPLE BLOCKS  5 │");
 		gotoxy(10, 19); cout << ("│       EXIT        ESC   |     MINT BLOCKS  6 │");
 		gotoxy(10, 20); cout << ("└───────────────────────┘");
@@ -105,7 +105,7 @@ void show_graphic(const vector<vector<string>>& p) {
 }
 // 방향키 입력
 int arrow(char key) {
-	switch (key) {
+	switch (key) {	
 	case 72: return 0;
 	case 75: return 1;
 	case 77: return 3;
@@ -405,27 +405,14 @@ int main() {
 				}
 			}
 
-			if (key == '0') { // 노란색 블록
-				blockColor = 0;
-			}
-			else if (key == '1') { // 초록색 블록
-				blockColor = 1;
-			}
-			else if (key == '2') { // 흰색 블록
-				blockColor = 2;
-			}
-			else if (key == '3') { // 파랑색 블록 
-				blockColor = 3;
-			}
-			else if (key == '4') { // 빨강색 블록 
-				blockColor = 4;
-			}
-			else if (key == '5') { // 보라색 블록 
-				blockColor = 5;
-			}
-			else if (key == '6') { // 민트색 블록 
-				blockColor = 6;
-			}
+			// 블록 색상 지정 
+			if (key == '0') blockColor = 0; // 노란색 블록
+			else if (key == '1') blockColor = 1; // 초록색 블록
+			else if (key == '2') blockColor = 2; // 흰색 블록
+			else if (key == '3') blockColor = 3; // 파랑색 블록 
+			else if (key == '4') blockColor = 4; // 빨강색 블록
+			else if (key == '5') blockColor = 5; // 보라색 블록
+			else if (key == '6') blockColor = 6; // 민트색 블록
 
 			// 방향키가 입력된 경우
 			if (key == 224) {

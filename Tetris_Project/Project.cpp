@@ -137,7 +137,7 @@ public:
 	// 블록 정보를 받으면 중심기준 점들의 위치를 반환
 	// 블록의 종류는 총 6개로, 블록의 상태를 입력받으면 상대좌표를 리턴함
 	void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
-		switch (blocktype) {
+		switch (blocktype) { // 블록의 모양에 맞춰서 돌아감
 		case 0:
 			switch (spinvalue) {
 			case 0: // 회전 상태는 총 4번 돌아가기에 switch-case도 4개씩 만들어줌
@@ -198,7 +198,7 @@ public:
 				nums_to_arr(p, 0, 0, 0, 1, 1, -1, 1, 0);
 				return;
 			}
-		case 4:
+		case 4: 
 			switch (spinvalue) {
 			case 0:
 				nums_to_arr(p, 0, 0, 0, 1, -1, 1, 1, 0);
@@ -213,7 +213,7 @@ public:
 				nums_to_arr(p, -1, -1, -1, 0, 0, 0, 0, 1);
 				return;
 			}
-		case 5:
+		case 5: // 네모 블록
 			switch (spinvalue) {
 			case 0:
 				nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
@@ -355,13 +355,12 @@ public:
 // 경계선 : ▩
 // 테트리스 블록 : ■
 // 테트리스 줄 완성 블록 : ▣
-// 테트리스 화면 크기 구상 : 대부분 10*20 사용
 int main() {
 	srand((unsigned)time(NULL));
 	GameUI::GameTitle(); // 게임 타이틀
 	CursorManager::setcursortype(NOCURSOR); // 커서 숨기기
 
-	int blockColor = 0; // 초기 블록 색상 설정 (0: 노란색, 1: 초록색)
+	int blockColor = 0; // 초기 블록 색상 설정 (0번이 노란색이라서 기본적으로 노란색이 나옴)
 	int i = 0, j = 0, key, a, b;
 	int blocktype, spinvalue, next_blocktype, next_spinvalue;
 	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
@@ -388,8 +387,8 @@ int main() {
 
 	location[0] = 4;
 	location[1] = 14; // 기준점이 생성되는 점
-	blocktype = rand() % 6;
-	spinvalue = rand() % 4;
+	blocktype = rand() % 6; // 블록 종류 6가지 
+	spinvalue = rand() % 4; // 반시계 방향으로 회전 (돌아가는 방향이 90도씩 4번)
 	next_blocktype = rand() % 6; // 다음 블록 타입 
 	next_spinvalue = rand() % 4;
 	tetrisGame.block_type_to_coors(block_coors, blocktype, spinvalue);

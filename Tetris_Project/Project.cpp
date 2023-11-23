@@ -438,7 +438,7 @@ int main() {
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
 							del_block(graphic, next_block_coors, 7, 24);
-							block_coors = next_block_coors;
+							block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
@@ -480,6 +480,7 @@ int main() {
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
 							del_block(graphic, next_block_coors, 7, 24);
+							block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
@@ -512,7 +513,7 @@ int main() {
 			}
 			else { // 회전키가 입력된 경우
 				del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
-				spinvalue = spin(spinvalue); // 블록회전상수를 키움
+				spinvalue = spin(spinvalue); // 블록을 반시계 방향으로 회전시킴
 				block_type_to_coors(block_coors, blocktype, spinvalue); // 그거에 맞춰서 블록좌표들을 변환하고
 				if (can_put(graphic, block_coors, location)) { // 놓을 수 있으면
 					put_block(graphic, block_coors, location[0], location[1], blockColor);
@@ -546,6 +547,7 @@ int main() {
 				location[0] = 4;
 				location[1] = 14; // 기준점이 생성되는 점
 				del_block(graphic, next_block_coors, 7, 24);
+				block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 				blocktype = next_blocktype;
 				spinvalue = next_spinvalue;
 				next_blocktype = rand() % 6;

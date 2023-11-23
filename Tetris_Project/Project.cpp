@@ -81,263 +81,276 @@ public:
 	}
 };
 
-// 점수
-int point = 0;
+// 테트리스 게임 클래스
+class TetrisGame {
+private:
+	int point; // 점수
 
-// 2차원 벡터 초기화 및 주어진 8개의 정수를 해당 벡터에 할당 (블록의 상대좌표를 구현할 때 편의하게 사용하기 위해 작성함)
-void nums_to_arr(vector<vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
-	p = { {a, b}, {c, d}, {e, f}, {g, h} };
-}
-// 시계 방향으로 회전
-int spin(int n) {
-	return (n == 3) ? 0 : n + 1;
-}
-// 반 시계 방향으로 회전 (벽면에 닿거나 다른 블록들과 닿았을 때 발현)
-int anti_spin(int n) {
-	return (n == 0) ? 3 : n - 1;
-}
+public:
+	TetrisGame() : point(0) {} // 생성자에서 초기화
 
-// 블록 띄우는 함수 (블록 보여주기)
-void show_graphic(const vector<vector<string>>& p) {
-	for (const auto& row : p) {
-		for (const auto& cell : row) {
-			cout << cell;
-		}
-		cout << endl;
+	// 2차원 벡터 초기화 및 주어진 8개의 정수를 해당 벡터에 할당 (블록의 상대좌표를 구현할 때 편의하게 사용하기 위해 작성함)
+	void nums_to_arr(vector<vector<int>>& p, int a, int b, int c, int d, int e, int f, int g, int h) {
+		p = { {a, b}, {c, d}, {e, f}, {g, h} };
 	}
-	cout << "			현재점수 : " << point << endl;
-}
-// 방향키 입력
-int arrow(char key) {
-	switch (key) {	
-	case 72: return 0;
-	case 75: return 1;
-	case 77: return 3;
-	case 80: return 2;
-	default: return -1;
-	}
-}
-int anti_arrow(char key) {
-	switch (key) {
-	case 72: return 0;
-	case 75: return 1;
-	case 77: return 3;
-	case 80: return 2;
-	default: return -1;
-	}
-}
 
-/* ------------블록관련-------------- */
-// 블록 정보를 받으면 중심기준 점들의 위치를 반환
-// 블록의 종류는 총 6개로, 블록의 상태를 입력받으면 상대좌표를 리턴함
-void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
-	switch (blocktype) {
-	case 0:
-		switch (spinvalue) {
-		case 0: // 회전 상태는 총 4번 돌아가기에 switch-case도 4개씩 만들어줌
-			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0); // 블록의 상대좌표
-			return;
-		case 1:
-			nums_to_arr(p, 0, -1, 0, 0, 0, 1, 0, 2);
-			return;
-		case 2:
-			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0);
-			return;
-		case 3:
-			nums_to_arr(p, 0, -1, 0, 0, 0, 1, 0, 2);
-			return;
-		}
-	case 1:
-		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, -1, -1, 0, -1, 0, 0, 0, 1);
-			return;
-		case 1:
-			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, -1);
-			return;
-		case 2:
-			nums_to_arr(p, 0, -1, 0, 0, 0, 1, 1, 1);
-			return;
-		case 3:
-			nums_to_arr(p, -1, 0, -1, 1, 0, 0, 1, 0);
-			return;
-		}
-	case 2:
-		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, 0, -1, 0, 0, 0, 1, -1, 1);
-			return;
-		case 1:
-			nums_to_arr(p, -1, -1, -1, 0, 0, 0, 1, 0);
-			return;
-		case 2:
-			nums_to_arr(p, 1, -1, 0, -1, 0, 0, 0, 1);
-			return;
-		case 3:
-			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, 1);
-			return;
-		}
-	case 3:
-		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
-			return;
-		case 1:
-			nums_to_arr(p, 0, -1, 0, 0, -1, 0, -1, 1);
-			return;
-		case 2:
-			nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
-			return;
-		case 3:
-			nums_to_arr(p, 0, 0, 0, 1, 1, -1, 1, 0);
-			return;
-		}
-	case 4:
-		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, 0, 0, 0, 1, -1, 1, 1, 0);
-			return;
-		case 1:
-			nums_to_arr(p, -1, -1, -1, 0, 0, 0, 0, 1);
-			return;
-		case 2:
-			nums_to_arr(p, 0, 0, 0, 1, -1, 1, 1, 0);
-			return;
-		case 3:
-			nums_to_arr(p, -1, -1, -1, 0, 0, 0, 0, 1);
-			return;
-		}
-	case 5:
-		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
-			return;
-		case 1:
-			nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
-			return;
-		case 2:
-			nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
-			return;
-		case 3:
-			nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
-			return;
-		}
+	// 시계 방향으로 회전
+	int spin(int n) {
+		return (n == 3) ? 0 : n + 1;
 	}
-}
-// 좌표, 블록점좌표배열, 기준점, 색상을 받으면 블록을 그래픽에 찍음 (블록 찍기 함수)
-void put_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b, int color) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	for (int i = 0; i < 4; i++) {
-		int tenpi = a + q[i][0];
-		int tenpj = b + q[i][1];
-		// 입력받은 색상에 따라 각 숫자에 맞는 색상 지정
-		if (color == 0) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-		}
-		else if (color == 1) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-		}
-		else if (color == 2) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		}
-		else if (color == 3) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		}
-		else if (color == 4) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-		}
-		else if (color == 5) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		}
-		else if (color == 6) {
-			SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-		}
-		p[tenpi][tenpj] = "■"; // 블록 크기만큼 색상 변경
+	// 반 시계 방향으로 회전 (벽면에 닿거나 다른 블록들과 닿았을 때 발현)
+	int anti_spin(int n) {
+		return (n == 0) ? 3 : n - 1;
 	}
-}
-// 좌표, 블록점좌표배열, 기준점을 받으면 블록을 그래픽에서 지움
-void del_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	for (int i = 0; i < 4; i++) {
-		int tenpi = a + q[i][0];
-		int tenpj = b + q[i][1];
-		SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); // 기본 텍스트 속성
-		p[tenpi][tenpj] = "  ";
-	}
-}
-// 기준점, 방향키를 입력받으면 기준점을 변환
-void move_coors(std::vector<int>& location, int key) {
-	int i;
 
-	switch (key) {
-	case 0:
-		location[0] -= 1;
-		return;
-	case 1:
-		location[1] -= 1;
-		return;
-	case 2:
-		location[0] += 1;
-		return;
-	case 3:
-		location[1] += 1;
-		return;
-	}
-}
-// 블록상대좌표, 기준점을 입력받으면 그래픽에 찍을 수 있는지를 판단 (블록이 겹치는지를 확인하는 함수)
-int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
-	int a, b, i;
-	for (i = 0; i < 4; i++) {
-		a = location[0] + block_coors[i][0];
-		b = location[1] + block_coors[i][1]; // a, b가 각각의 사각형 좌표에 대응
-		if ((b < 10) || (b > 19)) return 0;
-		if (graphic[a][b] != "  ") return 0;
-	}
-	return 1;
-}
-
-
-/* ------------게임진행-------------- */
-// 그래픽, 행을 입력받으면 해당 행이 꽉 찼는지 판단
-int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) { // r = row
-	int j;
-	for (j = 10; j < 20; j++) if (graphic[r][j] == "  ")return 0;
-	return 1;
-}
-// 그래픽을 받으면 줄을 지워주며 그래픽도 보여줌 (블록 왼쪽에서부터 폭발하는 듯한 이모션이 나오도록 만듬)
-void row_clear(std::vector<std::vector<std::string>>& graphic) {
-	int i, j, k, high = 4;
-	for (i = 24; i > high; i--) {
-		if (is_row_full(graphic, i)) { // i열이 꽉찼으면
-			graphic[i][10] = "▣";
-			graphic[i][11] = "▣";
-			graphic[i][12] = "▣";
-			system("cls");
-			show_graphic(graphic);
-			graphic[i][13] = "▣";
-			graphic[i][14] = "▣";
-			graphic[i][15] = "▣";
-			system("cls");
-			show_graphic(graphic);
-			graphic[i][16] = "▣";
-			graphic[i][17] = "▣";
-			system("cls");
-			show_graphic(graphic);
-			graphic[i][18] = "▣";
-			graphic[i][19] = "▣";
-			system("cls");
-			show_graphic(graphic);
-			for (k = i; k > high; k--) { // i열부터 위로 쭉
-				for (j = 10; j < 20; j++) { // 모든 열에
-					graphic[k][j] = graphic[k - 1][j];
-				}
+	// 블록 띄우는 함수 (블록 보여주기)
+	void show_graphic(const vector<vector<string>>& p) {
+		for (const auto& row : p) {
+			for (const auto& cell : row) {
+				cout << cell;
 			}
-			i++;
-			high;
-			point += 1000; // 한 줄씩 사라질 때마다 포인트가 1000점씩 올라감
+			cout << endl;
+		}
+		cout << "			현재점수 : " << point << endl;
+	}
+	// 방향키 입력
+	int arrow(char key) {
+		switch (key) {
+		case 72: return 0;
+		case 75: return 1;
+		case 77: return 3;
+		case 80: return 2;
+		default: return -1;
 		}
 	}
-}
+	int anti_arrow(char key) {
+		switch (key) {
+		case 72: return 0;
+		case 75: return 1;
+		case 77: return 3;
+		case 80: return 2;
+		default: return -1;
+		}
+	}
+
+	/* ------------블록관련-------------- */
+	// 블록 정보를 받으면 중심기준 점들의 위치를 반환
+	// 블록의 종류는 총 6개로, 블록의 상태를 입력받으면 상대좌표를 리턴함
+	void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int spinvalue) {
+		switch (blocktype) {
+		case 0:
+			switch (spinvalue) {
+			case 0: // 회전 상태는 총 4번 돌아가기에 switch-case도 4개씩 만들어줌
+				nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0); // 블록의 상대좌표
+				return;
+			case 1:
+				nums_to_arr(p, 0, -1, 0, 0, 0, 1, 0, 2);
+				return;
+			case 2:
+				nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0);
+				return;
+			case 3:
+				nums_to_arr(p, 0, -1, 0, 0, 0, 1, 0, 2);
+				return;
+			}
+		case 1:
+			switch (spinvalue) {
+			case 0:
+				nums_to_arr(p, -1, -1, 0, -1, 0, 0, 0, 1);
+				return;
+			case 1:
+				nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, -1);
+				return;
+			case 2:
+				nums_to_arr(p, 0, -1, 0, 0, 0, 1, 1, 1);
+				return;
+			case 3:
+				nums_to_arr(p, -1, 0, -1, 1, 0, 0, 1, 0);
+				return;
+			}
+		case 2:
+			switch (spinvalue) {
+			case 0:
+				nums_to_arr(p, 0, -1, 0, 0, 0, 1, -1, 1);
+				return;
+			case 1:
+				nums_to_arr(p, -1, -1, -1, 0, 0, 0, 1, 0);
+				return;
+			case 2:
+				nums_to_arr(p, 1, -1, 0, -1, 0, 0, 0, 1);
+				return;
+			case 3:
+				nums_to_arr(p, -1, 0, 0, 0, 1, 0, 1, 1);
+				return;
+			}
+		case 3:
+			switch (spinvalue) {
+			case 0:
+				nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
+				return;
+			case 1:
+				nums_to_arr(p, 0, -1, 0, 0, -1, 0, -1, 1);
+				return;
+			case 2:
+				nums_to_arr(p, -1, 0, 0, 0, 0, 1, 1, 1);
+				return;
+			case 3:
+				nums_to_arr(p, 0, 0, 0, 1, 1, -1, 1, 0);
+				return;
+			}
+		case 4:
+			switch (spinvalue) {
+			case 0:
+				nums_to_arr(p, 0, 0, 0, 1, -1, 1, 1, 0);
+				return;
+			case 1:
+				nums_to_arr(p, -1, -1, -1, 0, 0, 0, 0, 1);
+				return;
+			case 2:
+				nums_to_arr(p, 0, 0, 0, 1, -1, 1, 1, 0);
+				return;
+			case 3:
+				nums_to_arr(p, -1, -1, -1, 0, 0, 0, 0, 1);
+				return;
+			}
+		case 5:
+			switch (spinvalue) {
+			case 0:
+				nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
+				return;
+			case 1:
+				nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
+				return;
+			case 2:
+				nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
+				return;
+			case 3:
+				nums_to_arr(p, 0, 0, 0, 1, 1, 0, 1, 1);
+				return;
+			}
+		}
+	}
+	// 좌표, 블록점좌표배열, 기준점, 색상을 받으면 블록을 그래픽에 찍음 (블록 찍기 함수)
+	void put_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b, int color) {
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		for (int i = 0; i < 4; i++) {
+			int tenpi = a + q[i][0];
+			int tenpj = b + q[i][1];
+			// 입력받은 색상에 따라 각 숫자에 맞는 색상 지정
+			if (color == 0) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			}
+			else if (color == 1) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			}
+			else if (color == 2) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			}
+			else if (color == 3) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			}
+			else if (color == 4) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
+			}
+			else if (color == 5) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			}
+			else if (color == 6) {
+				SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			}
+			p[tenpi][tenpj] = "■"; // 블록 크기만큼 색상 변경
+		}
+	}
+	// 좌표, 블록점좌표배열, 기준점을 받으면 블록을 그래픽에서 지움
+	void del_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b) {
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		for (int i = 0; i < 4; i++) {
+			int tenpi = a + q[i][0];
+			int tenpj = b + q[i][1];
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE); // 기본 텍스트 속성
+			p[tenpi][tenpj] = "  ";
+		}
+	}
+	// 기준점, 방향키를 입력받으면 기준점을 변환
+	void move_coors(std::vector<int>& location, int key) {
+		int i;
+
+		switch (key) {
+		case 0:
+			location[0] -= 1;
+			return;
+		case 1:
+			location[1] -= 1;
+			return;
+		case 2:
+			location[0] += 1;
+			return;
+		case 3:
+			location[1] += 1;
+			return;
+		}
+	}
+	// 블록상대좌표, 기준점을 입력받으면 그래픽에 찍을 수 있는지를 판단 (블록이 겹치는지를 확인하는 함수)
+	int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
+		int a, b, i;
+		for (i = 0; i < 4; i++) {
+			a = location[0] + block_coors[i][0];
+			b = location[1] + block_coors[i][1]; // a, b가 각각의 사각형 좌표에 대응
+			if ((b < 10) || (b > 19)) return 0;
+			if (graphic[a][b] != "  ") return 0;
+		}
+		return 1;
+	}
+
+
+	/* ------------게임진행-------------- */
+	// 그래픽, 행을 입력받으면 해당 행이 꽉 찼는지 판단
+	int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) { // r = row
+		int j;
+		for (j = 10; j < 20; j++) if (graphic[r][j] == "  ")return 0;
+		return 1;
+	}
+	// 그래픽을 받으면 줄을 지워주며 그래픽도 보여줌 (블록 왼쪽에서부터 폭발하는 듯한 이모션이 나오도록 만듬)
+	void row_clear(std::vector<std::vector<std::string>>& graphic) {
+		int i, j, k, high = 4;
+		for (i = 24; i > high; i--) {
+			if (is_row_full(graphic, i)) { // i열이 꽉찼으면
+				graphic[i][10] = "▣";
+				graphic[i][11] = "▣";
+				graphic[i][12] = "▣";
+				system("cls");
+				show_graphic(graphic);
+				graphic[i][13] = "▣";
+				graphic[i][14] = "▣";
+				graphic[i][15] = "▣";
+				system("cls");
+				show_graphic(graphic);
+				graphic[i][16] = "▣";
+				graphic[i][17] = "▣";
+				system("cls");
+				show_graphic(graphic);
+				graphic[i][18] = "▣";
+				graphic[i][19] = "▣";
+				system("cls");
+				show_graphic(graphic);
+				for (k = i; k > high; k--) { // i열부터 위로 쭉
+					for (j = 10; j < 20; j++) { // 모든 열에
+						graphic[k][j] = graphic[k - 1][j];
+					}
+				}
+				i++;
+				high;
+				point += 1000; // 한 줄씩 사라질 때마다 포인트가 1000점씩 올라감
+			}
+		}
+	}
+
+	// 현재 점수 반환
+	int GetPoint() const {
+		return point;
+	}
+};
+
 
 // 경계선 : ▩
 // 테트리스 블록 : ■
@@ -359,6 +372,8 @@ int main() {
 	tl[0] = 7;
 	tl[1] = 24;
 
+	TetrisGame tetrisGame; // TetrisGame 클래스의 객체 생성
+
 	clock_t start;
 
 	// 테트리스 블록 가두는 벽
@@ -377,12 +392,12 @@ int main() {
 	spinvalue = rand() % 4;
 	next_blocktype = rand() % 6; // 다음 블록 타입 
 	next_spinvalue = rand() % 4;
-	block_type_to_coors(block_coors, blocktype, spinvalue);
-	block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue);
-	put_block(graphic, block_coors, location[0], location[1], blockColor);
-	put_block(graphic, next_block_coors, 7, 24, blockColor);
+	tetrisGame.block_type_to_coors(block_coors, blocktype, spinvalue);
+	tetrisGame.block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue);
+	tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor);
+	tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 	system("cls"); // 콘솔창을 지우고 다시 그림
-	show_graphic(graphic);
+	tetrisGame.show_graphic(graphic);
 	start = clock();
 
 	while (1) {
@@ -400,13 +415,13 @@ int main() {
 				cin >> response;
 				if (response == 'Y' || response == 'y') {
 					cout << "게임을 종료합니다." << endl;
-					cout << "득점 : " << point << endl;
+					cout << "득점 : " << tetrisGame.GetPoint() << endl;
 					break;
 				}
 				else {
 					// 게임 계속 진행
 					system("cls");
-					show_graphic(graphic);
+					tetrisGame.show_graphic(graphic);
 				}
 			}
 
@@ -424,38 +439,38 @@ int main() {
 				key = getch();
 
 				// 상 키가 눌린 경우
-				if (arrow(key) == 0) {
-					del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
+				if (tetrisGame.arrow(key) == 0) {
+					tetrisGame.del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
 					while (1) {
-						move_coors(location, 2); // 기준점을 한칸 내림
-						if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
+						tetrisGame.move_coors(location, 2); // 기준점을 한칸 내림
+						if (tetrisGame.can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
 							continue;
 						}
 						else { // 변경된 기준점에 놓을 수 없다면
-							move_coors(location, 0); // 기준점 원상복귀
-							put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
-							row_clear(graphic);
+							tetrisGame.move_coors(location, 0); // 기준점 원상복귀
+							tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
+							tetrisGame.row_clear(graphic);
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
-							del_block(graphic, next_block_coors, 7, 24);
+							tetrisGame.del_block(graphic, next_block_coors, 7, 24);
 							block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
 							next_spinvalue = rand() % 4; // 랜덤 블록정보입력
-							block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+							tetrisGame.block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
 
-							if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
-								put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-								put_block(graphic, next_block_coors, 7, 24, blockColor);
+							if (tetrisGame.can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+								tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+								tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 								system("cls"); // 콘솔창을 지우고 다시 그림
-								show_graphic(graphic); // 다시 찍고 보여줌
+								tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 							}
 							else { // 새 블록 생성할 자리가 없음
-								put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-								put_block(graphic, next_block_coors, 7, 24, blockColor);
+								tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+								tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 								system("cls"); // 콘솔창을 지우고 다시 그림
-								show_graphic(graphic); // 다시 찍고 보여줌
+								tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 								printf("			게임오버");
 								return 0;
 							}
@@ -465,67 +480,67 @@ int main() {
 				}
 				// 좌, 우, 하 키가 눌린 경우
 				else {
-					del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
-					move_coors(location, arrow(key)); // 기준점을 움직임
-					if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
-						put_block(graphic, block_coors, location[0], location[1], blockColor); // 블록 놓기
+					tetrisGame.del_block(graphic, block_coors, location[0], location[1]); // 블럭 지우기
+					tetrisGame.move_coors(location, tetrisGame.arrow(key)); // 기준점을 움직임
+					if (tetrisGame.can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있다면
+						tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블록 놓기
 						system("cls");
-						show_graphic(graphic); // 블록 보여줌 
+						tetrisGame.show_graphic(graphic); // 블록 보여줌 
 					}
 					else { // 변경된 기준점에 놓을 수 없다면
-						if (arrow(key) == 2) { // 아래로 막힌 경우
-							move_coors(location, 0); // 기준점 원상복귀
-							put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
-							row_clear(graphic);
+						if (tetrisGame.arrow(key) == 2) { // 아래로 막힌 경우
+							tetrisGame.move_coors(location, 0); // 기준점 원상복귀
+							tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
+							tetrisGame.row_clear(graphic);
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
-							del_block(graphic, next_block_coors, 7, 24);
+							tetrisGame.del_block(graphic, next_block_coors, 7, 24);
 							block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
 							next_spinvalue = rand() % 4; // 랜덤 블록정보입력
-							block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+							tetrisGame.block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
 
-							if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
-								put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-								put_block(graphic, next_block_coors, 7, 24, blockColor);
+							if (tetrisGame.can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+								tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+								tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 								system("cls"); // 콘솔창을 지우고 다시 그림
-								show_graphic(graphic); // 다시 찍고 보여줌
+								tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 							}
 							else { // 새 블록 생성할 자리가 없음
-								put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-								put_block(graphic, next_block_coors, 7, 24, blockColor);
+								tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+								tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 								system("cls"); // 콘솔창을 지우고 다시 그림
-								show_graphic(graphic); // 다시 찍고 보여줌
+								tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 								printf("			게임오버");
 								return 0;
 							}
 						}
 						else { // 좌우가 막힌 경우
-							move_coors(location, anti_arrow(key)); // 기준점 원상복귀
-							put_block(graphic, block_coors, location[0], location[1], blockColor);
+							tetrisGame.move_coors(location, tetrisGame.anti_arrow(key)); // 기준점 원상복귀
+							tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor);
 							system("cls"); // 콘솔창을 지우고 다시 그림
-							show_graphic(graphic); // 다시 찍고 보여줌
+							tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 						}
 					}
 				}
 			}
 			else { // 회전키가 입력된 경우
-				del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
-				spinvalue = spin(spinvalue); // 블록을 반시계 방향으로 회전시킴
-				block_type_to_coors(block_coors, blocktype, spinvalue); // 그거에 맞춰서 블록좌표들을 변환하고
-				if (can_put(graphic, block_coors, location)) { // 놓을 수 있으면
-					put_block(graphic, block_coors, location[0], location[1], blockColor);
+				tetrisGame.del_block(graphic, block_coors, location[0], location[1]); // 블록 지우기
+				spinvalue = tetrisGame.spin(spinvalue); // 블록을 반시계 방향으로 회전시킴
+				tetrisGame.block_type_to_coors(block_coors, blocktype, spinvalue); // 그거에 맞춰서 블록좌표들을 변환하고
+				if (tetrisGame.can_put(graphic, block_coors, location)) { // 놓을 수 있으면
+					tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor);
 					system("cls"); // 콘솔창을 지우고 다시 그림
-					show_graphic(graphic); // 블록 보여주기
+					tetrisGame.show_graphic(graphic); // 블록 보여주기
 				}
 				else { // 놓을 수 없다면
-					spinvalue = anti_spin(spinvalue); // 블록회전상수를 1줄이고(원상복귀)
-					block_type_to_coors(block_coors, blocktype, spinvalue);
-					put_block(graphic, block_coors, location[0], location[1], blockColor); // 블록 찍은 다음에
+					spinvalue = tetrisGame.anti_spin(spinvalue); // 블록회전상수를 1줄이고(원상복귀)
+					tetrisGame.block_type_to_coors(block_coors, blocktype, spinvalue);
+					tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블록 찍은 다음에
 					system("cls"); // 콘솔창을 지우고 다시 그림
-					show_graphic(graphic); // 블록 보여주기
+					tetrisGame.show_graphic(graphic); // 블록 보여주기
 				}
 			}
 		}
@@ -533,37 +548,37 @@ int main() {
 		// 단위시간마다 블록을 떨굼
 		if ((clock() - start) > 1499) { // 1.5초마다 블록이 한 칸씩 밑으로 떨어지게함
 			start = clock();
-			del_block(graphic, block_coors, location[0], location[1]); // 블록을 지우고
-			move_coors(location, 2); // 기준점을 움직임
-			if (can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있으면
-				put_block(graphic, block_coors, location[0], location[1], blockColor);
+			tetrisGame.del_block(graphic, block_coors, location[0], location[1]); // 블록을 지우고
+			tetrisGame.move_coors(location, 2); // 기준점을 움직임
+			if (tetrisGame.can_put(graphic, block_coors, location)) { // 변경된 기준점에 놓을 수 있으면
+				tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor);
 				system("cls"); // 콘솔창을 지우고 다시 그림
-				show_graphic(graphic);
+				tetrisGame.show_graphic(graphic);
 			}
 			else { // 변경된 기준점에 놓을 수 없다면
-				move_coors(location, 0); // 기준점 원상복귀
-				put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
-				row_clear(graphic);
+				tetrisGame.move_coors(location, 0); // 기준점 원상복귀
+				tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭놓기
+				tetrisGame.row_clear(graphic);
 				location[0] = 4;
 				location[1] = 14; // 기준점이 생성되는 점
-				del_block(graphic, next_block_coors, 7, 24);
+				tetrisGame.del_block(graphic, next_block_coors, 7, 24);
 				block_coors = next_block_coors; // 다음 블록으로 바꿔줌
 				blocktype = next_blocktype;
 				spinvalue = next_spinvalue;
 				next_blocktype = rand() % 6;
 				next_spinvalue = rand() % 4; // 랜덤 블록정보입력
-				block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
-				if (can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
-					put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-					put_block(graphic, next_block_coors, 7, 24, blockColor);
+				tetrisGame.block_type_to_coors(next_block_coors, next_blocktype, next_spinvalue); // 블록좌표 파악
+				if (tetrisGame.can_put(graphic, next_block_coors, location)) { // 새 블록을 놓을 수 있다면
+					tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+					tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 					system("cls"); // 콘솔창을 지우고 다시 그림
-					show_graphic(graphic); // 다시 찍고 보여줌
+					tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 				}
 				else { // 새 블록 생성할 자리가 없음
-					put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
-					put_block(graphic, next_block_coors, 7, 24, blockColor);
+					tetrisGame.put_block(graphic, block_coors, location[0], location[1], blockColor); // 블럭 놓기
+					tetrisGame.put_block(graphic, next_block_coors, 7, 24, blockColor);
 					system("cls"); // 콘솔창을 지우고 다시 그림
-					show_graphic(graphic); // 다시 찍고 보여줌
+					tetrisGame.show_graphic(graphic); // 다시 찍고 보여줌
 					printf("			게임오버");
 					return 0;
 				}

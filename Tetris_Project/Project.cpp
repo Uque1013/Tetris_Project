@@ -55,27 +55,31 @@ public:
 	}
 };
 
-// 커서 안 보이게 하는 함수
+// 커서 관리
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE;
-void setcursortype(CURSOR_TYPE c) {
-	CONSOLE_CURSOR_INFO CurInfo;
+class CursorManager {
+public:
+	// 커서 설정 함수
+	static void setcursortype(CURSOR_TYPE c) {
+		CONSOLE_CURSOR_INFO CurInfo;
 
-	switch (c) {
-	case NOCURSOR:
-		CurInfo.dwSize = 1;
-		CurInfo.bVisible = FALSE;
-		break;
-	case SOLIDCURSOR:
-		CurInfo.dwSize = 100;
-		CurInfo.bVisible = TRUE;
-		break;
-	case NORMALCURSOR:
-		CurInfo.dwSize = 20;
-		CurInfo.bVisible = TRUE;
-		break;
+		switch (c) {
+		case NOCURSOR:
+			CurInfo.dwSize = 1;
+			CurInfo.bVisible = FALSE;
+			break;
+		case SOLIDCURSOR:
+			CurInfo.dwSize = 100;
+			CurInfo.bVisible = TRUE;
+			break;
+		case NORMALCURSOR:
+			CurInfo.dwSize = 20;
+			CurInfo.bVisible = TRUE;
+			break;
+		}
+		SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
 	}
-	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
-}
+};
 
 // 점수
 int point = 0;
@@ -93,7 +97,7 @@ int anti_spin(int n) {
 	return (n == 0) ? 3 : n - 1;
 }
 
-// 블록 띄우는 함수
+// 블록 띄우는 함수 (블록 보여주기)
 void show_graphic(const vector<vector<string>>& p) {
 	for (const auto& row : p) {
 		for (const auto& cell : row) {
@@ -130,8 +134,8 @@ void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int sp
 	switch (blocktype) {
 	case 0:
 		switch (spinvalue) {
-		case 0:
-			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0);
+		case 0: // 회전 상태는 총 4번 돌아가기에 switch-case도 4개씩 만들어줌
+			nums_to_arr(p, -1, 0, 0, 0, 1, 0, 2, 0); // 블록의 상대좌표
 			return;
 		case 1:
 			nums_to_arr(p, 0, -1, 0, 0, 0, 1, 0, 2);
@@ -220,12 +224,13 @@ void block_type_to_coors(std::vector<std::vector<int>>& p, int blocktype, int sp
 		}
 	}
 }
-// 좌표, 블록점좌표배열, 기준점, 색상을 받으면 블록을 그래픽에 찍음
+// 좌표, 블록점좌표배열, 기준점, 색상을 받으면 블록을 그래픽에 찍음 (블록 찍기 함수)
 void put_block(vector<vector<string>>& p, vector<vector<int>>& q, int a, int b, int color) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	for (int i = 0; i < 4; i++) {
 		int tenpi = a + q[i][0];
 		int tenpj = b + q[i][1];
+		// 입력받은 색상에 따라 각 숫자에 맞는 색상 지정
 		if (color == 0) {
 			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 		}
@@ -279,7 +284,7 @@ void move_coors(std::vector<int>& location, int key) {
 		return;
 	}
 }
-// 블록상대좌표, 기준점을 입력받으면 그래픽에 찍을 수 있는지를 판단
+// 블록상대좌표, 기준점을 입력받으면 그래픽에 찍을 수 있는지를 판단 (블록이 겹치는지를 확인하는 함수)
 int can_put(std::vector<std::vector<std::string>>& graphic, std::vector<std::vector<int>>& block_coors, std::vector<int>& location) {
 	int a, b, i;
 	for (i = 0; i < 4; i++) {
@@ -299,7 +304,7 @@ int is_row_full(std::vector<std::vector<std::string>>& graphic, int r) { // r = 
 	for (j = 10; j < 20; j++) if (graphic[r][j] == "  ")return 0;
 	return 1;
 }
-// 그래픽을 받으면 줄을 지워주며 그래픽도 보여줌
+// 그래픽을 받으면 줄을 지워주며 그래픽도 보여줌 (블록 왼쪽에서부터 폭발하는 듯한 이모션이 나오도록 만듬)
 void row_clear(std::vector<std::vector<std::string>>& graphic) {
 	int i, j, k, high = 4;
 	for (i = 24; i > high; i--) {
@@ -341,13 +346,13 @@ void row_clear(std::vector<std::vector<std::string>>& graphic) {
 int main() {
 	srand((unsigned)time(NULL));
 	GameUI::GameTitle(); // 게임 타이틀
-	setcursortype(NOCURSOR); //커서 없앰 
+	CursorManager::setcursortype(NOCURSOR); // 커서 숨기기
 
 	int blockColor = 0; // 초기 블록 색상 설정 (0: 노란색, 1: 초록색)
 	int i = 0, j = 0, key, a, b;
 	int blocktype, spinvalue, next_blocktype, next_spinvalue;
 	std::vector<std::vector<std::string>> graphic(30, std::vector<std::string>(30)); // 문자열을 원소로 갖는 2차원 배열
-	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // 블럭의 상대좌표틀
+	std::vector<std::vector<int>> block_coors(4, std::vector<int>(2)); // 블럭의 상대좌표들
 	std::vector<std::vector<int>> next_block_coors(4, std::vector<int>(2));
 	std::vector<int> location(2); // 블럭 중심의 위치
 	std::vector<int> tl(2); // 블럭 중심의 위치
@@ -433,6 +438,7 @@ int main() {
 							location[0] = 4;
 							location[1] = 14; // 기준점이 생성되는 점
 							del_block(graphic, next_block_coors, 7, 24);
+							block_coors = next_block_coors;
 							blocktype = next_blocktype;
 							spinvalue = next_spinvalue;
 							next_blocktype = rand() % 6;
@@ -524,7 +530,7 @@ int main() {
 		}
 
 		// 단위시간마다 블록을 떨굼
-		if ((clock() - start) > 1499) {
+		if ((clock() - start) > 1499) { // 1.5초마다 블록이 한 칸씩 밑으로 떨어지게함
 			start = clock();
 			del_block(graphic, block_coors, location[0], location[1]); // 블록을 지우고
 			move_coors(location, 2); // 기준점을 움직임
